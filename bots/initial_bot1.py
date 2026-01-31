@@ -1,13 +1,20 @@
 import random
-from collections import deque
+from collections import deque, defaultdict
 from typing import Tuple, Optional, List
-
+import numpy as np
 from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
 from item import Pan, Plate, Food
 
-
-
+class GameState:
+    def __init__(self, robot_controller: RobotController):
+        self.currTurn = robot_controller.get_current_turn()
+        self.teamColor = robot_controller.get_team()
+        self.enemyColor = robot_controller.get_enemy_team()
+        self.orders = robot_controller.get_orders()
+        self.map = robot_controller.get_map()
+        self.teamBots = robot_controller.get_team_bot_ids()
+        self.teamMoney = robot_controller.get_team_money()
 
 class MonteCarloTreeSearchNode():
     def __init__(self, state, parent=None, parent_action=None):
@@ -41,8 +48,12 @@ class MonteCarloTreeSearchNode():
 
         self.children.append(child_node)
         return child_node   
+    
+
     def is_terminal_node(self):
         return self.state.is_game_over()
+    
+
     def rollout(self):
         current_rollout_state = self.state
         
@@ -53,6 +64,8 @@ class MonteCarloTreeSearchNode():
             action = self.rollout_policy(possible_moves)
             current_rollout_state = current_rollout_state.move(action)
         return current_rollout_state.game_result()  
+    
+
     def backpropagate(self, result):
         self._number_of_visits += 1.
         self._results[result] += 1.
@@ -61,6 +74,45 @@ class MonteCarloTreeSearchNode():
 
     def is_fully_expanded(self):
         return len(self._untried_actions) == 0 
+    
+    def best_child(self, c_param=0.1):
+        choices_weights = [(c.q() / c.n()) + c_param * np.sqrt((2 * np.log(self.n()) / c.n())) for c in self.children]
+        return self.children[np.argmax(choices_weights)]
+        
+
+    def rollout_policy(self, possible_moves):
+        
+        return possible_moves[np.random.randint(len(possible_moves))]
+
+                                
+    def _tree_policy(self):
+        current_node = self
+        while not current_node.is_terminal_node():
+            
+            if not current_node.is_fully_expanded():
+                return current_node.expand()
+            else:
+                current_node = current_node.best_child()
+        return current_node
+
+    def best_action(self):
+        simulation_no = 100
+        
+        
+        for i in range(simulation_no):
+            
+            v = self._tree_policy()
+            reward = v.rollout()
+            v.backpropagate(reward)
+        
+        return self.best_child(c_param=0.)
+
+
+
+
+
+
+
 
 class BotPlayer:
     def __init__(self, map_copy):
@@ -73,6 +125,12 @@ class BotPlayer:
     def updateGameState(self, controller: RobotController):
         pass
     def get_bfs_path(self, controller: RobotController, start: Tuple[int, int], target_predicate) -> Optional[Tuple[int, int]]:
+
+
+        root = MonteCarloTreeSearchNode(state = initial_state)
+        selected_node = root.best_action()
+
+
         queue = deque([(start, [])]) 
         visited = set([start])
         w, h = self.map.width, self.map.height
