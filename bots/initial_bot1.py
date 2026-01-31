@@ -1,10 +1,30 @@
 import random
 from collections import deque, defaultdict
 from typing import Tuple, Optional, List
+from enum import Enum
 import numpy as np
 from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
 from item import Pan, Plate, Food
+
+
+class BotMoves(Enum):
+    MOVE_UP = 0
+    MOVE_DOWN = 1
+    MOVE_LEFT = 2
+    MOVE_RIGHT = 3
+
+class BotActions(Enum):
+    BUY_FOOD = 4
+    BUY_ITEM = 5
+    PLACE_ITEM = 6
+    PICKUP_ITEM = 7
+    CHOP_FOOD = 8
+    COOK_FOOD = 9
+    ADD_FOOD_TO_PLATE = 10
+    SUBMIT_ORDER = 11
+    TRASH_ITEM = 12
+
 
 class GameState:
     def __init__(self, robot_controller: RobotController):
@@ -15,6 +35,20 @@ class GameState:
         self.map = robot_controller.get_map()
         self.teamBots = robot_controller.get_team_bot_ids()
         self.teamMoney = robot_controller.get_team_money()
+        self.switchable = robot_controller.can_switch_maps()
+        self.switchStatus = robot_controller.get_switch_info()
+        self.possiblleMoves = []
+
+    def updateState(self, robot_controller: RobotController):
+        self.currTurn = robot_controller.get_current_turn()
+        self.teamColor = robot_controller.get_team()
+        self.enemyColor = robot_controller.get_enemy_team()
+        self.orders = robot_controller.get_orders()
+        self.map = robot_controller.get_map()
+        self.teamBots = robot_controller.get_team_bot_ids()
+        self.teamMoney = robot_controller.get_team_money()
+        self.bot1Spot = self.teamBots[0] 
+        
 
 class MonteCarloTreeSearchNode():
     def __init__(self, state, parent=None, parent_action=None):
