@@ -6,6 +6,10 @@ from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
 from item import Pan, Plate, Food
 
+
+
+
+
 class BotPlayer:
     def __init__(self, map_copy):
         self.map = map_copy
@@ -14,7 +18,8 @@ class BotPlayer:
         self.my_bot_id = None
         
         self.state = 0
-
+    def updateGameState(self, controller: RobotController):
+        pass
     def get_bfs_path(self, controller: RobotController, start: Tuple[int, int], target_predicate) -> Optional[Tuple[int, int]]:
         queue = deque([(start, [])]) 
         visited = set([start])
