@@ -15,6 +15,9 @@ class BotPlayer:
         
         self.state = 0
 
+
+    #commented randomly
+
     def get_bfs_path(self, controller: RobotController, start: Tuple[int, int], target_predicate) -> Optional[Tuple[int, int]]:
         queue = deque([(start, [])]) 
         visited = set([start])
