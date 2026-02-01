@@ -89,7 +89,9 @@ class BotPlayer:
                 if (nx, ny) in self.megaDict.keys():
                     for j in range(len(self.megaDict[(nx, ny)])): # go over each action
                         currUsefulNeighbor = self.megaDict[(nx, ny)][j]
-                        
+
+                        updatedNeighborTile = controller.get_tile(controller.get_team(), currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])
+
 
                         itemInHand = controller.get_bot_state(bot_id)['holding']
                         match currUsefulNeighbor[0].title:
@@ -108,7 +110,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4])
                                     #moves to nx,ny then d
-                                if (currUsefulNeighbor[0].num_dirty_plates > 0):
+                                if (currUsefulNeighbor.num_dirty_plates > 0):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 3])
 
@@ -122,25 +124,25 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4])
                             case "COUNTER":
-                                if (currUsefulNeighbor[0].item is not None):
+                                if (updatedNeighborTile.item is not None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 3])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4])
                                     
-                                    if (currUsefulNeighbor[0].item is Food and currUsefulNeighbor[0].item.can_chop):
+                                    if (updatedNeighborTile.item is Food and updatedNeighborTile.item.can_chop):
                                         if dx == dy == 0:
                                             legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 3])
                                         else:
                                             legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 4])
-                                if currUsefulNeighbor[0].item is None and itemInHand is not None:
+                                if updatedNeighborTile.item is None and itemInHand is not None:
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
                             
                             case "SINKTABLE":
-                                if (currUsefulNeighbor.num_clean_plates > 0 and itemInHand == None):
+                                if (updatedNeighborTile.num_clean_plates > 0 and itemInHand == None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 3])
                                         
