@@ -110,7 +110,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4])
                                     #moves to nx,ny then d
-                                if (currUsefulNeighbor.num_dirty_plates > 0):
+                                if (updatedNeighborTile.num_dirty_plates > 0):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 3])
 
@@ -165,7 +165,7 @@ class BotPlayer:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
-                            case TileType.SHOP:
+                            case "SHOP":
                                 legal_moves.append([nx, ny, "SHOP", 2])
                             case "BOX":
                                 if itemInHand is not None:
