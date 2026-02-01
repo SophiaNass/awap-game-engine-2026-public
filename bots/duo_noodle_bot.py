@@ -482,9 +482,6 @@ class BotPlayer:
 
 
     def make_move(self, controller: RobotController, move):
-
-
-
         for x in range(2):
             curr_move = move[x]
             bot_id = controller.get_team_bot_ids(controller.get_team())[x]
@@ -507,6 +504,11 @@ class BotPlayer:
                         controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
                 # create casing
 
+
+                #action = curr_move[2] = [BotActions.ACTION, [target_x, target_y]], where
+                # target x, target y is the tile the action is being performed on (eg sink coord)
+                # just need to run actionfunction based on what enum is at the target coords 
+                # curr_move[2[1]] = [target_x, target_y]
                 match curr_move[2][0]:
                     case BotActions.NONE:
                         pass  # no-op / wait
