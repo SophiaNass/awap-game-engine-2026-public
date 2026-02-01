@@ -12,23 +12,23 @@ Actions:
 
 
 """
-class BotActions(Enum):
-    NONE = 0
-    COOK = 1
-    CHOP =3
-    BUY_PLATE = 5
-    BUY_PAN = 6
-    THROW_TRASH = 7
-    BUY_PAN = 8
-    BUY_PLATE = 9
-    BUY_EGG =10
-    BUY_ONION =11
-    BUY_MEAT =12
-    BUY_NOODLES =13
-    BUY_SAUCE =14
-    PICKUP_ITEM = 15
-    PLACE_ITEM = 16
-    TAKE_FROM_PAN = 17
+# class BotActions(Enum):
+#     NONE = 0
+#     COOK = 1
+#     CHOP =3
+#     BUY_PLATE = 5
+#     BUY_PAN = 6
+#     THROW_TRASH = 7
+#     BUY_PAN = 8
+#     BUY_PLATE = 9
+#     BUY_EGG =10
+#     BUY_ONION =11
+#     BUY_MEAT =12
+#     BUY_NOODLES =13
+#     BUY_SAUCE =14
+#     PICKUP_ITEM = 15
+#     PLACE_ITEM = 16
+#     TAKE_FROM_PAN = 17
 
 class BotPlayer:
     def __init__(self, map_copy):
@@ -177,4 +177,5 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
+        print(self.megaDict)
    
