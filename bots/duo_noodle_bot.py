@@ -123,21 +123,48 @@ class BotPlayer:
                                                     legal_moves.append((tempx, tempy, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4])
+
                             case "COUNTER":
                                 if (updatedNeighborTile.item is not None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 3])
+
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4])
                                     
                                     if (updatedNeighborTile.item is Food and updatedNeighborTile.item.can_chop):
                                         if dx == dy == 0:
                                             legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 3])
+
+                                            actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                            for i in range(len(actions)):
+                                                adx, ady = actions[i]
+                                                tempx, tempy = nx + adx, ny + ady
+                                                if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                    if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                        legal_moves.append((tempx, tempy, [BotActions.CHOP,currUsefulNeighbor[1]], 2))
                                         else:
                                             legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 4])
+
+                                            
                                 if updatedNeighborTile.item is None and itemInHand is not None:
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
+
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
                             
@@ -146,11 +173,16 @@ class BotPlayer:
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 3])
                                         
-                                        # Add all moves you can do from here after action 
-                                        # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 4])
-                                       
+                                        
                                 
                             case "COOKER":
                                 legal_moves.append([nx, ny, "COOKER", 2])
@@ -158,11 +190,27 @@ class BotPlayer:
                                 if (itemInHand is not None and itemInHand["type"] == "Food"):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3])
+
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.TRASH,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                                 if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['food'] != []):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3])
+
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.TRASH,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                             case "SHOP":
