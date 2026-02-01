@@ -14,21 +14,80 @@ Actions:
 """
 class BotActions(Enum):
     NONE = 0
-    COOK = 1
-    CHOP =3
-    BUY_PLATE = 5
-    BUY_PAN = 6
-    THROW_TRASH = 7
-    BUY_PAN = 8
-    BUY_PLATE = 9
-    BUY_EGG =10
-    BUY_ONION =11
-    BUY_MEAT =12
-    BUY_NOODLES =13
-    BUY_SAUCE =14
-    PICKUP_ITEM = 15
-    PLACE_ITEM = 16
-    TAKE_FROM_PAN = 17
+    COOK_UP = 1
+    COOK_DOWN = 2
+    COOK_LEFT = 3
+    COOK_RIGHT = 4
+    CHOP_UP = 5
+    CHOP_DOWN = 6
+    CHOP_LEFT = 7
+    CHOP_RIGHT = 8
+    BUY_PLATE_UP = 9
+    BUY_PLATE_DOWN = 10
+    BUY_PLATE_LEFT = 11
+    BUY_PLATE_RIGHT = 12
+    BUY_PAN_UP = 13
+    BUY_PAN_DOWN = 14
+    BUY_PAN_LEFT = 15
+    BUY_PAN_RIGHT = 16
+    BUY_EGG_UP = 17
+    BUY_EGG_DOWN = 18
+    BUY_EGG_LEFT = 19
+    BUY_EGG_RIGHT = 20
+    BUY_ONION_UP = 21
+    BUY_ONION_DOWN = 22
+    BUY_ONION_LEFT = 23
+    BUY_ONION_RIGHT = 24
+    BUY_MEAT_UP = 25
+    BUY_MEAT_DOWN = 26
+    BUY_MEAT_LEFT = 27
+    BUY_MEAT_RIGHT = 28
+    BUY_NOODLES_UP = 29
+    BUY_NOODLES_DOWN = 30
+    BUY_NOODLES_LEFT = 31
+    BUY_NOODLES_RIGHT = 32
+    BUY_SAUCE_UP = 33
+    BUY_SAUCE_DOWN = 34
+    BUY_SAUCE_LEFT = 35
+    BUY_SAUCE_RIGHT = 36
+    PICKUP_ITEM_UP = 37
+    PICKUP_ITEM_DOWN = 38
+    PICKUP_ITEM_LEFT = 39
+    PICKUP_ITEM_RIGHT = 40
+    PLACE_ITEM_UP = 41
+    PLACE_ITEM_DOWN = 42
+    PLACE_ITEM_LEFT = 43
+    PLACE_ITEM_RIGHT = 44
+    TRASH_UP = 45
+    TRASH_DOWN = 46
+    TRASH_LEFT = 47
+    TRASH_RIGHT = 48
+    TAKE_FROM_PAN_UP = 49
+    TAKE_FROM_PAN_DOWN = 50
+    TAKE_FROM_PAN_LEFT = 51
+    TAKE_FROM_PAN_RIGHT = 52
+    TAKE_CLEAN_PLATE_UP = 53
+    TAKE_CLEAN_PLATE_DOWN = 54
+    TAKE_CLEAN_PLATE_LEFT = 55
+    TAKE_CLEAN_PLATE_RIGHT = 56
+    PUT_DIRTY_PLATE_UP = 57
+    PUT_DIRTY_PLATE_DOWN = 58
+    PUT_DIRTY_PLATE_LEFT = 59
+    PUT_DIRTY_PLATE_RIGHT = 60
+    WASH_SINK_UP = 61
+    WASH_SINK_DOWN = 62
+    WASH_SINK_LEFT = 63
+    WASH_SINK_RIGHT = 64
+    FOOD_TO_PLATE_UP = 65
+    FOOD_TO_PLATE_DOWN = 66
+    FOOD_TO_PLATE_LEFT = 67
+    FOOD_TO_PLATE_RIGHT = 68
+    SUBMIT_UP = 69
+    SUBMIT_DOWN = 70
+    SUBMIT_LEFT = 71
+    SUBMIT_RIGHT = 72
+
+
 
 class BotPlayer:
     def __init__(self, map_copy):
@@ -40,53 +99,6 @@ class BotPlayer:
         
         self.state = 0
 
-    def get_bfs_path(self, controller: RobotController, start: Tuple[int, int], target_predicate) -> Optional[Tuple[int, int]]:
-        queue = deque([(start, [])]) 
-        visited = set([start])
-        w, h = self.map.width, self.map.height
-
-        while queue:
-            (curr_x, curr_y), path = queue.popleft()
-            tile = controller.get_tile(controller.get_team(), curr_x, curr_y)
-            if target_predicate(curr_x, curr_y, tile):
-                if not path: return (0, 0) 
-                return path[0] 
-
-            for dx in [0, -1, 1]:
-                for dy in [0, -1, 1]:
-                    if dx == 0 and dy == 0: continue
-                    nx, ny = curr_x + dx, curr_y + dy
-                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited:
-                        if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                            visited.add((nx, ny))
-                            queue.append(((nx, ny), path + [(dx, dy)]))
-        return None
-
-    def move_towards(self, controller: RobotController, bot_id: int, target_x: int, target_y: int) -> bool:
-        bot_state = controller.get_bot_state(bot_id)
-        bx, by = bot_state['x'], bot_state['y']
-        def is_adjacent_to_target(x, y, tile):
-            return max(abs(x - target_x), abs(y - target_y)) <= 1
-        if is_adjacent_to_target(bx, by, None): return True
-        step = self.get_bfs_path(controller, (bx, by), is_adjacent_to_target)
-        if step and (step[0] != 0 or step[1] != 0):
-            controller.move(bot_id, step[0], step[1])
-            return False 
-        return False 
-
-    def find_nearest_tile(self, controller: RobotController, bot_x: int, bot_y: int, tile_name: str) -> Optional[Tuple[int, int]]:
-        best_dist = 9999
-        best_pos = None
-        m = controller.get_map(controller.get_team())
-        for x in range(m.width):
-            for y in range(m.height):
-                tile = m.tiles[x][y]
-                if tile.tile_name == tile_name:
-                    dist = max(abs(bot_x - x), abs(bot_y - y))
-                    if dist < best_dist:
-                        best_dist = dist
-                        best_pos = (x, y)
-        return best_pos
 
     def getMegaDict(self, controller: RobotController):
         megaDict = self.megaDict
@@ -177,4 +189,5 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
+        print(self.megaDict)
    
