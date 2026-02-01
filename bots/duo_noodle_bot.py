@@ -2,6 +2,7 @@ import random
 from collections import deque
 from typing import Tuple, Optional, List
 from enum import Enum
+from itertools import product
 
 from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
@@ -75,9 +76,8 @@ class BotPlayer:
     # 0 = STAY, 1 = MOVE ONLY, 2 = INTERACT WITH TILE, THEN MOVE, 3 = INTERACT WITHOUT MOVING, 4 = MOVE THEN INTERACT WITH TILE 
    
     
-    def get_all_legal_moves(self, controller: RobotController):
-        retList = []
-        bot_id = controller.get_team_bot_ids(controller.get_team())[0]
+    def get_legal_moves_per_bot(self, controller: RobotController , botid):
+        bot_id = controller.get_team_bot_ids(controller.get_team())[botid]
         legal_moves = []
         bot_state = controller.get_bot_state(bot_id)
         x, y = bot_state['x'], bot_state['y']
@@ -91,10 +91,10 @@ class BotPlayer:
                         currUsefulNeighbor = self.megaDict[(nx, ny)][j]
 
                         updatedNeighborTile = controller.get_tile(controller.get_team(), currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])
-
+    
 
                         itemInHand = controller.get_bot_state(bot_id)['holding']
-                        match currUsefulNeighbor[0].title:
+                        match currUsefulNeighbor[0].tile_name:
                             case "SINK":
                                 if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
                                     if dx == dy == 0:
@@ -444,38 +444,44 @@ class BotPlayer:
                     else:
                         legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 0])
                         continue
-                nx, ny = x + dx, y + dy
-                fail = False
-                for i in range(len(retList)):
-                    for j in range(len(retList[i])):
-                        if retList[i][j][0] == nx and retList[i][j][1] == ny:
-                            fail = True
-                if not fail:
-                    
-                    if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                        legal_moves.append([nx, ny, 'MOVE', 1])
-                    if (nx, ny) in self.megaDict.keys():
-                        for i in range(len(self.megaDict[(nx, ny)])):
-                            if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                                legal_moves.append([nx, ny, self.megaDict[(nx, ny)][i], 4])
-                            legal_moves.append([nx, ny, self.megaDict[(nx, ny)][i], 2])
-                        
-        
-        retList.append((legal_moves))
-        return retList
+                #nx, ny = x + dx, y + dy
+                if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
+                    legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 1])
+            
 
+                        
+        print(legal_moves)
+        return legal_moves
+
+    def legal_moves(self, controller: RobotController):
+        legal1 = self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[0])
+        legal2 = self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[1])
+
+        joint_moves = []
+
+        for m1, m2 in product(legal1, legal2):
+
+            # --- Rule 1: cannot move to same tile ---
+            if m1[0] == m2[0] and m1[1] == m2[1]:
+                continue
+
+            # --- Rule 2: cannot act on same target tile ---
+            # Some actions might not have a meaningful target
+            target1 = m1[2][1] if m1[2][0] != BotActions.NONE else None
+            target2 = m2[2][1] if m2[2][0] != BotActions.NONE else None
+
+            if target1 is not None and target1 == target2:
+                continue
+
+            joint_moves.append([m1, m2])
+
+        return joint_moves
     #retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
-    def get_total_actions(self, controller: RobotController):
-        retList = []
-        legal_list = self.get_all_legal_moves(controller)
-        for i in range(len(legal_list[0])):
-            for j in range(len(legal_list[1])):
-                retList.append([legal_list[0][i], legal_list[1][j]])
-        return retList
+ 
 
 
     def is_game_over(self, controller: RobotController):
-        if controller.get_turn() >= 500:
+        if controller.get_turn() >= 250:
             return True
         return False
     
@@ -496,7 +502,6 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
-        print('-----')
-        print(self.get_all_legal_moves(controller))
+        print(self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[0]))
         print('-----')
    
