@@ -186,7 +186,7 @@ class BotPlayer:
                                 
                             case "COOKER":
                                 #might error here with cooking progress
-                                if (updatedNeighborTile.item is not None and itemInHand is None):
+                                if (updatedNeighborTile.item is not None and updatedNeighborTile.item["type"] == "Food" and itemInHand is None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 3])
                                         
@@ -213,7 +213,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
                                 
-                                if (itemInHand is not None and itemInHand["type"] == "Food" and itemInHand['can_cook']):
+                                if (itemInHand is not None and itemInHand["type"] == "Food" and itemInHand['can_cook'] and updatedNeighborTile.item is not None and updatedNeighborTile.item["type"] == "Pan" and updatedNeighborTile.item["food"] is None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.COOK,currUsefulNeighbor[1]], 3])
 
