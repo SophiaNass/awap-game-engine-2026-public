@@ -507,6 +507,89 @@ class BotPlayer:
                         controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
                 # create casing
 
+                match curr_move[2][0]:
+                    case BotActions.NONE:
+                        pass  # no-op / wait
+
+                    case BotActions.COOK:
+                        # handle cook
+                        ...
+
+                    case BotActions.CHOP:
+                        # handle chop
+                        ...
+
+                    case BotActions.BUY_PLATE:
+                        # handle buy plate
+                        ...
+
+                    case BotActions.BUY_PAN:
+                        # handle buy pan
+                        ...
+
+                    case BotActions.BUY_EGG:
+                        # handle buy egg
+                        ...
+
+                    case BotActions.BUY_ONION:
+                        # handle buy onion
+                        ...
+
+                    case BotActions.BUY_MEAT:
+                        # handle buy meat
+                        ...
+
+                    case BotActions.BUY_NOODLES:
+                        # handle buy noodles
+                        ...
+
+                    case BotActions.BUY_SAUCE:
+                        # handle buy sauce
+                        ...
+
+                    case BotActions.PICKUP:
+                        # handle pickup
+                        ...
+
+                    case BotActions.PLACE_ITEM:
+                        # handle place item
+                        ...
+
+                    case BotActions.TRASH:
+                        # handle trash
+                        ...
+
+                    case BotActions.TAKE_FROM_COUNTER:
+                        # handle take from counter
+                        ...
+
+                    case BotActions.TAKE_FROM_PAN:
+                        # handle take from pan
+                        ...
+
+                    case BotActions.TAKE_CLEAN_PLATE:
+                        # handle take clean plate
+                        ...
+
+                    case BotActions.PUT_DIRTY_PLATE:
+                        # handle put dirty plate
+                        ...
+
+                    case BotActions.WASH_SINK:
+                        # handle wash sink
+                        ...
+
+                    case BotActions.FOOD_TO_PLATE:
+                        # handle food to plate
+                        ...
+
+                    case BotActions.SUBMIT:
+                        # handle submit
+                        ...
+
+                    case _:
+                        raise ValueError(f"Unhandled BotAction: {curr_move[2][0]}")
+                    
                 if (curr_move[3] == 2):
                     if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
                         print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
