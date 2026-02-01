@@ -95,71 +95,72 @@ class BotPlayer:
                             case "SINK":
                                 if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3])
                                         
                                         # Add all moves you can do from here after action 
-                                        # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                        legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2])
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4))
+
+                                        legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4])
                                     #moves to nx,ny then d
                                 if (currUsefulNeighbor[0].num_dirty_plates > 0):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 3])
                                     # Add all moves you can do from here after action 
                                         # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
                                    
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4])
                             case "COUNTER":
                                 if (currUsefulNeighbor[0].item is not None):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 3])
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4])
                                     
                                     if (currUsefulNeighbor[0].item is Food and currUsefulNeighbor[0].item.can_chop):
                                         if dx == dy == 0:
-                                            legal_moves.append((nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 3))
+                                            legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 3])
                                         else:
-                                            legal_moves.append((nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 4))
+                                            legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 4])
                                 if currUsefulNeighbor[0].item is None and itemInHand is not None:
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
                             
                             case "SINKTABLE":
                                 if (currUsefulNeighbor.num_clean_plates > 0 and itemInHand == None):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 3])
                                         
                                         # Add all moves you can do from here after action 
                                         # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 4])
                                        
                                 
                             case "COOKER":
-                                legal_moves.append((nx, ny, "COOKER", 2))
+                                legal_moves.append([nx, ny, "COOKER", 2])
                             case "TRASH":
                                 if (itemInHand is not None and itemInHand["type"] == "Food"):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3])
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                                 if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['food'] != []):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3])
                                     else:
-                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                             case TileType.SHOP:
-                                legal_moves.append((nx, ny, "SHOP", 2))
+                                legal_moves.append([nx, ny, "SHOP", 2])
                             case TileType.BOX:
-                                legal_moves.append((nx, ny, "BOX", 2))
+                                legal_moves.append([nx, ny, "BOX", 2])
                             case "SUBMIT":
                                 if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['dirty'] == False):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 3])
                                     else:
                                         
                                         legal_moves.append((nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 4))
