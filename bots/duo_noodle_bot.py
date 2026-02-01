@@ -6,6 +6,18 @@ from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
 from item import Pan, Plate, Food
 
+
+
+enum BotActions(Enum):
+
+    NONE = 0
+    COOK_EGG = 1
+    COOK_MEAT = 2
+    CHOP_ONION = 3
+    CHOP_MEAT = 4
+    BUY_PLATE = 5
+    BUY_PAN = 6
+
 class BotPlayer:
     def __init__(self, map_copy):
         self.map = map_copy
@@ -134,10 +146,23 @@ class BotPlayer:
         return False
     
     def game_result(self, controller: RobotController):
-        return controller.game_result()
+        if controller.is_game_over(controller):
+            ours = controller.get_team_money(controller.get_team())
+            theirs = controller.get_team_money(controller.get_enemy_team())
+            if ours > theirs:
+                return 1
+            elif theirs > ours:
+                return -1
+
+            else:
+                return 0
+            
+    def move(self, controller: RobotController, ):
+
+        
     
-    def move(self, controller: RobotController, bot_id: int, dx: int, dy: int):
-        return controller.move(bot_id, dx, dy)
+
+        
 
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
