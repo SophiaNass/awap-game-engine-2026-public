@@ -553,19 +553,20 @@ class BotPlayer:
                         ...
 
                     case BotActions.PICKUP:
-                        # handle pickup
+                        controller.pickup(bot_id, curr_move[2][1][0], curr_move[2][1][1])
                         ...
 
                     case BotActions.PLACE_ITEM:
-                        # handle place item
+                        controller.place(bot_id, curr_move[2][1][0], curr_move[2][1][0])
                         ...
 
                     case BotActions.TRASH:
-                        # handle trash
+                        controller.trash(bot_id, curr_move[2][1][0], curr_move[2][1][0])
+
                         ...
 
                     case BotActions.TAKE_FROM_COUNTER:
-                        # handle take from counter
+                        controller.pickup(bot_id, curr_move[2][1][0], curr_move[2][1][1])
                         ...
 
                     case BotActions.TAKE_FROM_PAN:
