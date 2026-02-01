@@ -12,6 +12,8 @@ Actions:
 
 
 """
+
+
 class BotActions(Enum):
     NONE = 0
     COOK_UP = 1
@@ -115,50 +117,52 @@ class BotPlayer:
                             if (nx,ny) not in megaDict.keys():
                                 neighbor_tile = controller.get_tile(controller.get_team(), nx, ny)
                                 if neighbor_tile is not None and neighbor_tile.tile_name == "FLOOR":
-                                    megaDict[(nx,ny)] = [curr_tile.tile_name]
+                                    megaDict[(nx,ny)] = [[curr_tile.tile_name, [x,y]]]
                             else:
-                                if curr_tile.tile_name not in megaDict[(nx,ny)]:
-                                    megaDict[(nx,ny)].append(curr_tile.tile_name)
+                                if not any(curr_tile.tile_name == item[0] for item in megaDict[(nx,ny)]):
+                                    megaDict[(nx,ny)].append([curr_tile.tile_name, [x,y]])
         self.megaDict = megaDict
         return megaDict
 
 
     # 0 = STAY, 1 = MOVE, 2 = INTERACT WITH TILE, 3 = INTERACT WITHOUT MOVING, 4 = INTERACT WITH TILE AND MOVE
+   
+    
     def get_all_legal_moves(self, controller: RobotController):
         retList = []
-        for i in range(len(controller.get_team_bot_ids(controller.get_team()))):
-            bot_id = controller.get_team_bot_ids(controller.get_team())[i]
-            legal_moves = []
-            bot_state = controller.get_bot_state(bot_id)
-            x, y = bot_state['x'], bot_state['y']
-            for dx in [-1, 0, 1]:
-                for dy in [-1, 0, 1]:
-                    nx, ny = x + dx, y + dy
-                    if dx == 0 and dy == 0:
-                        if (nx, ny) in self.megaDict.keys():
-                            for j in range(len(self.megaDict[(nx, ny)])):
-                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][j], 3))
-                        else:
-                            legal_moves.append((nx, ny, 'STAY', 0))
-                            continue
-                    nx, ny = x + dx, y + dy
-                    fail = False
-                    for i in range(len(retList)):
-                        for j in range(len(retList[i])):
-                            if retList[i][j][0] == nx and retList[i][j][1] == ny:
-                                fail = True
-                    if not fail:
+        bot_id = controller.get_team_bot_ids(controller.get_team())[0]
+        legal_moves = []
+        bot_state = controller.get_bot_state(bot_id)
+        x, y = bot_state['x'], bot_state['y']
+
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                nx, ny = x + dx, y + dy
+                if dx == 0 and dy == 0:
+                    if (nx, ny) in self.megaDict.keys():
+                        for j in range(len(self.megaDict[(nx, ny)])):
+                            legal_moves.append((nx, ny, self.megaDict[(nx, ny)][j], 3))
+                    else:
+                        legal_moves.append((nx, ny, 'STAY', 0))
+                        continue
+                nx, ny = x + dx, y + dy
+                fail = False
+                for i in range(len(retList)):
+                    for j in range(len(retList[i])):
+                        if retList[i][j][0] == nx and retList[i][j][1] == ny:
+                            fail = True
+                if not fail:
+                    
+                    if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
+                        legal_moves.append((nx, ny, 'MOVE', 1))
+                    if (nx, ny) in self.megaDict.keys():
+                        for i in range(len(self.megaDict[(nx, ny)])):
+                            if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
+                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 4))
+                            legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 2))
                         
-                        if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                            legal_moves.append((nx, ny, 'MOVE', 1))
-                        if (nx, ny) in self.megaDict.keys():
-                            for i in range(len(self.megaDict[(nx, ny)])):
-                                if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                                    legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 4))
-                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 2))
-                            
-            
-            retList.append((legal_moves))
+        
+        retList.append((legal_moves))
         return retList
 
     #retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
