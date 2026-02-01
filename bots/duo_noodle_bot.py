@@ -115,7 +115,10 @@ class MonteCarloTreeSearchNode():
 
     def rollout_policy(self, possible_moves):
         
-        return possible_moves[np.random.randint(len(possible_moves))]
+        active_moves = [m for m in possible_moves if m[2][0] != BotActions.NONE]
+        if len(active_moves)>0:
+            return random.choice(active_moves)
+        return random.choice(possible_moves)
 
                                 
     def _tree_policy(self):
@@ -178,7 +181,7 @@ class BotPlayer:
         self.megaDict = {}
         
         self.state = 0
-        self.mcts_simulations = 20 
+        self.mcts_simulations = 8 
 
 
     def getMegaDict(self, controller: RobotController):
@@ -576,14 +579,15 @@ class BotPlayer:
                     else:
                         legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 0])
                         continue
-                #nx, ny = x + dx, y + dy
+                nx, ny = x + dx, y + dy
                 if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
                     if(dx !=0 or dy !=0):
                         legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 1])
                 
 
                         
-        #print(legal_moves)
+        print(legal_moves)
+
         return legal_moves
 
     def legal_moves(self, controller: RobotController):
