@@ -218,6 +218,10 @@ class BotPlayer:
                             case "BOX":
                                 if itemInHand is None and updatedNeighborTile.item is not None:
                                     legal_moves.append([nx, ny, [BotActions.GET_,currUsefulNeighbor[1]], 2])
+                                if itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['dirty'] == False and updatedNeighborTile.item is not None:
+                                    legal_moves.append([nx, ny, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 2])
+                                if itemInHand is not None and itemInHand["type"] == "Plate" and updatedNeighborTile.item is not None:
+                                    legal_moves.append([nx, ny, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 2])
 
                                     
                             case "SUBMIT":
