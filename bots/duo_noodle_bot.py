@@ -76,10 +76,10 @@ class BotPlayer:
     # 0 = STAY, 1 = MOVE ONLY, 2 = INTERACT WITH TILE, THEN MOVE, 3 = INTERACT WITHOUT MOVING, 4 = MOVE THEN INTERACT WITH TILE 
    
     
-    def get_legal_moves_per_bot(self, controller: RobotController , botid: int):
+    def get_legal_moves_per_bot(self, controller: RobotController , bot_id: int):
         
         legal_moves = []
-        bot_state = controller.get_bot_state(botid)
+        bot_state = controller.get_bot_state(bot_id)
         x, y = bot_state['x'], bot_state['y']
 
         for dx in [-1, 0, 1]:
