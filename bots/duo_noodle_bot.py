@@ -105,8 +105,6 @@ class BotPlayer:
                     fail = False
                     for i in range(len(retList)):
                         for j in range(len(retList[i])):
-                            print('here')
-                            print(retList)
                             
                             if retList[i][j][0] == nx and retList[i][j][1] == ny:
                                 fail = True
@@ -120,6 +118,15 @@ class BotPlayer:
             
             retList.append((legal_moves))
         return retList
+
+    def get_total_actions(self, controller: RobotController):
+        retList = []
+        legal_list = self.get_all_legal_moves(controller)
+        for i in range(len(legal_list[0])):
+            for j in range(len(legal_list[1])):
+                retList.append([legal_list[0][i], legal_list[1][j]])
+        return retList
+
 
     def is_game_over(self, controller: RobotController):
         if controller.get_turn() >= 500:
@@ -135,14 +142,10 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
-        #    print(controller.get_team())
-        #    print(self.megaDict)
-        print('-')
-        # print(controller)
-        print(controller.get_orders(controller.get_team()))
-        print('-')
-        # print(self.get_all_legal_moves(controller))
-        # print(self.get_all_legal_moves(controller, controller.get_team_bot_ids(controller.get_team())[1]))
+        print('first')
+        for i in range(len(self.get_total_actions(controller))):
+            print(self.get_total_actions(controller)[i])
+ 
 
 
        
