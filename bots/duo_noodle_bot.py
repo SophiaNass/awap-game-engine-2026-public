@@ -8,15 +8,6 @@ from item import Pan, Plate, Food
 
 
 
-enum BotActions(Enum):
-
-    NONE = 0
-    COOK_EGG = 1
-    COOK_MEAT = 2
-    CHOP_ONION = 3
-    CHOP_MEAT = 4
-    BUY_PLATE = 5
-    BUY_PAN = 6
 
 class BotPlayer:
     def __init__(self, map_copy):
@@ -130,7 +121,9 @@ class BotPlayer:
             
             retList.append((legal_moves))
         return retList
-
+    
+    
+    #retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
     def get_total_actions(self, controller: RobotController):
         retList = []
         legal_list = self.get_all_legal_moves(controller)
@@ -157,7 +150,7 @@ class BotPlayer:
             else:
                 return 0
             
-    def move(self, controller: RobotController, ):
+    # def move(self, controller: RobotController, ):
 
         
     
