@@ -481,6 +481,45 @@ class BotPlayer:
  
 
 
+    def make_move(self, controller: RobotController, move):
+
+
+
+        for x in range(2):
+            curr_move = move[x]
+            bot_id = controller.get_team_bot_ids(controller.get_team())[x]
+
+            x,y = controller.get_bot_position(bot_id)
+
+            if (curr_move[3] == 0):
+                break
+
+            elif (curr_move[3] == 1):
+                if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
+                            print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
+                else:
+                    controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
+            else:
+                if(curr_move[3] == 4):
+                    if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
+                        print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
+                    else:
+                        controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
+                # create casing
+
+                if (curr_move[3] == 2):
+                    if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
+                        print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
+                    else:
+                        controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
+
+             
+                    #create cases by enum action
+
+
+
+        
+
     def is_game_over(self, controller: RobotController):
         if controller.get_turn() >= 250:
             return True
