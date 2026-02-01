@@ -99,6 +99,39 @@ class BotPlayer:
         
         self.state = 0
 
+    def get_bfs_path(self, controller: RobotController, start: Tuple[int, int], target_predicate) -> Optional[Tuple[int, int]]:
+        queue = deque([(start, [])]) 
+        visited = set([start])
+        w, h = self.map.width, self.map.height
+
+        while queue:
+            (curr_x, curr_y), path = queue.popleft()
+            tile = controller.get_tile(controller.get_team(), curr_x, curr_y)
+            if target_predicate(curr_x, curr_y, tile):
+                if not path: return (0, 0) 
+                return path[0] 
+
+            for dx in [0, -1, 1]:
+                for dy in [0, -1, 1]:
+                    if dx == 0 and dy == 0: continue
+                    nx, ny = curr_x + dx, curr_y + dy
+                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in visited:
+                        if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
+                            visited.add((nx, ny))
+                            queue.append(((nx, ny), path + [(dx, dy)]))
+        return None
+
+    def move_towards(self, controller: RobotController, bot_id: int, target_x: int, target_y: int) -> bool:
+        bot_state = controller.get_bot_state(bot_id)
+        bx, by = bot_state['x'], bot_state['y']
+        def is_adjacent_to_target(x, y, tile):
+            return max(abs(x - target_x), abs(y - target_y)) <= 1
+        if is_adjacent_to_target(bx, by, None): return True
+        step = self.get_bfs_path(controller, (bx, by), is_adjacent_to_target)
+        if step and (step[0] != 0 or step[1] != 0):
+            controller.move(bot_id, step[0], step[1])
+            return False 
+        return False 
 
     def find_nearest_tile(self, controller: RobotController, bot_x: int, bot_y: int, tile_name: str) -> Optional[Tuple[int, int]]:
         best_dist = 9999
@@ -155,6 +188,8 @@ class BotPlayer:
                     fail = False
                     for i in range(len(retList)):
                         for j in range(len(retList[i])):
+                            print('here')
+                            print(retList)
                             
                             if retList[i][j][0] == nx and retList[i][j][1] == ny:
                                 fail = True
@@ -174,9 +209,10 @@ class BotPlayer:
         retList = []
         legal_list = self.get_all_legal_moves(controller)
         for i in range(len(legal_list[0])):
-            for j in range(len(legal_list[1]))                                                                                                                                                                                                             :
+            for j in range(len(legal_list[1])):
                 retList.append([legal_list[0][i], legal_list[1][j]])
         return retList
+
 
     def is_game_over(self, controller: RobotController):
         if controller.get_turn() >= 500:
@@ -194,17 +230,10 @@ class BotPlayer:
 
             else:
                 return 0
-            
-    def move(self, controller: RobotController, ):
-        print()
    
         
 
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
-        #    print(controller.get_team())
-        #    print(self.megaDict)
-
-       
-     
+   
