@@ -126,8 +126,10 @@ class BotPlayer:
            self.getMegaDict(controller)
         #    print(controller.get_team())
         #    print(self.megaDict)
-        
-        print(self.get_all_legal_moves(controller))
+        print('-')
+        print(controller.get_orders)
+        print('-')
+        # print(self.get_all_legal_moves(controller))
         # print(self.get_all_legal_moves(controller, controller.get_team_bot_ids(controller.get_team())[1]))
 
 
