@@ -121,13 +121,23 @@ class BotPlayer:
             retList.append((legal_moves))
         return retList
 
+    def is_game_over(self, controller: RobotController):
+        return controller.is_game_over()
+    
+    def game_result(self, controller: RobotController):
+        return controller.game_result()
+    
+    def move(self, controller: RobotController, bot_id: int, dx: int, dy: int):
+        return controller.move(bot_id, dx, dy)
+
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
         #    print(controller.get_team())
         #    print(self.megaDict)
         print('-')
-        print(controller.get_orders)
+        # print(controller)
+        print(controller.get_orders(controller.get_team()))
         print('-')
         # print(self.get_all_legal_moves(controller))
         # print(self.get_all_legal_moves(controller, controller.get_team_bot_ids(controller.get_team())[1]))
