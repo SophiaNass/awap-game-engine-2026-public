@@ -126,8 +126,6 @@ class BotPlayer:
                     fail = False
                     for i in range(len(retList)):
                         for j in range(len(retList[i])):
-                            print('here')
-                            print(retList)
                             
                             if retList[i][j][0] == nx and retList[i][j][1] == ny:
                                 fail = True
@@ -142,7 +140,7 @@ class BotPlayer:
             retList.append((legal_moves))
         return retList
 
-#retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
+    #retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
     def get_total_actions(self, controller: RobotController):
         retList = []
         legal_list = self.get_all_legal_moves(controller)
@@ -178,12 +176,7 @@ class BotPlayer:
            self.getMegaDict(controller)
         #    print(controller.get_team())
         #    print(self.megaDict)
-        print('-')
-        # print(controller)
-        print(controller.get_orders(controller.get_team()))
-        print('-')
-        # print(self.get_all_legal_moves(controller))
-        # print(self.get_all_legal_moves(controller, controller.get_team_bot_ids(controller.get_team())[1]))
+
 
 
        
