@@ -12,6 +12,7 @@ class BotPlayer:
         self.assembly_counter = None 
         self.cooker_loc = None
         self.my_bot_id = None
+        self.megaDict = {}
         
         self.state = 0
 
@@ -63,31 +64,53 @@ class BotPlayer:
                         best_pos = (x, y)
         return best_pos
 
-    def play_turn(self, controller: RobotController):
-       currmap = controller.get_map(controller.get_team()).tiles
-       bot1ID = controller.get_team_bot_ids(controller.get_team())[1]
-       #print("Bot 1 ID:", bot1ID)
-       #print("Position:", controller.get_bot_state(bot1ID)['x'], controller.get_bot_state(bot1ID)['y'])
-       if (controller.can_move(bot1ID,  controller.get_bot_state(bot1ID)['x']+1, controller.get_bot_state(bot1ID)['y'])):
-            print("Bot 1 can move RIGHT to:", controller.get_bot_state(bot1ID)['x']+1, controller.get_bot_state(bot1ID)['y'])
-       if (controller.can_move(bot1ID,  controller.get_bot_state(bot1ID)['x']-1, controller.get_bot_state(bot1ID)['y'])):
-            print("Bot 1 can move LEFT to:", controller.get_bot_state(bot1ID)['x']-1, controller.get_bot_state(bot1ID)['y'])
-       
-       for x in range(len(currmap)):
-        for y in range(len(currmap[0])):
-            print(x, y, "is", currmap[x][y].tile_name)
-            if (controller.can_move(bot1ID, x, y)):
-                print("YAYYYYYYYY Bot 1 can move to:", x, y)
+    def getMegaDict(self, controller: RobotController):
+        megaDict = self.megaDict
+        currmap = controller.get_map(controller.get_team()).tiles
+        for x in range(len(currmap)):
+            for y in range(len(currmap[0])):
+                curr_tile = controller.get_tile(controller.get_team(), x, y)
+                if curr_tile is not None and curr_tile.tile_name != "FLOOR" and curr_tile.tile_name != "WALL":
+                    actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                    for i in range(len(actions)):
+                        dx, dy = actions[i]
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < len(currmap) and 0 <= ny < len(currmap[0]):
+                            if (nx,ny) not in megaDict.keys():
+                                neighbor_tile = controller.get_tile(controller.get_team(), nx, ny)
+                                if neighbor_tile is not None and neighbor_tile.tile_name == "FLOOR":
+                                    megaDict[(nx,ny)] = [curr_tile.tile_name]
+                            else:
+                                if curr_tile.tile_name not in megaDict[(nx,ny)]:
+                                    megaDict[(nx,ny)].append(curr_tile.tile_name)
+        self.megaDict = megaDict
+        return megaDict
 
-       
-       bot2ID = controller.get_team_bot_ids(controller.get_team())[0]
-       for x in range(len(currmap)):
-        for y in range(len(currmap[0])):
-            if (controller.can_move(bot2ID, x, y)):
-                print("YAYYYYYYYY Bot 2 can move to:", x, y)
-       
-      
-       #can_move= controller.can_move(controller.get_team()[0])
+    def get_all_legal_moves(self, controller: RobotController, bot_id: int):
+        legal_moves = []
+        bot_state = controller.get_bot_state(bot_id)
+        bx, by = bot_state['x'], bot_state['y']
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx == 0 and dy == 0:
+                    continue
+                nx, ny = bx + dx, by + dy
+                if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
+                    legal_moves.append((dx, dy, ))
+                if self.megaDict.get((nx, ny)):
+                    for i in range(len(self.megaDict[(nx, ny)])):
+                        legal_moves.append((self.megaDict[(nx, ny)][i], (nx, ny)))
+        return legal_moves
+
+    def play_turn(self, controller: RobotController):
+        if controller.get_turn() == 1:
+           self.getMegaDict(controller)
+        #    print(controller.get_team())
+        #    print(self.megaDict)
+
+        print(self.get_all_legal_moves(controller, controller.get_team_bot_ids(controller.get_team())[0]))
+
+
        
        
     def stupidTurn(self, controller: RobotController):

@@ -28,11 +28,11 @@ class BotActions(Enum):
 
 
 
-[ bot1  , bot2   ]
+# [ bot1  , bot2   ]
 
-[[BotMoves.MOVE_UP, BotMoves.BUY_ITEM], [BotMoves.MOVE_UP, BotMoves.BUY_ITEM]]
+# [[BotMoves.MOVE_UP, BotMoves.BUY_ITEM], [BotMoves.MOVE_UP, BotMoves.BUY_ITEM]]
 
-bot1 = [BotMoves.MOVE_UP, BotMoves.BUY_ITEM]
+# bot1 = [BotMoves.MOVE_UP, BotMoves.BUY_ITEM]
 
 class GameState:
     def __init__(self, robot_controller: RobotController):
