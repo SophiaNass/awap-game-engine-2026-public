@@ -15,6 +15,7 @@ class BotMoves(Enum):
     MOVE_RIGHT = 3
 
 class BotActions(Enum):
+    NoneAction = 0
     BUY_FOOD = 4
     BUY_ITEM = 5
     PLACE_ITEM = 6
@@ -25,6 +26,13 @@ class BotActions(Enum):
     SUBMIT_ORDER = 11
     TRASH_ITEM = 12
 
+
+
+[ bot1  , bot2   ]
+
+[[BotMoves.MOVE_UP, BotMoves.BUY_ITEM], [BotMoves.MOVE_UP, BotMoves.BUY_ITEM]]
+
+bot1 = [BotMoves.MOVE_UP, BotMoves.BUY_ITEM]
 
 class GameState:
     def __init__(self, robot_controller: RobotController):
@@ -48,7 +56,7 @@ class GameState:
         self.teamBots = robot_controller.get_team_bot_ids()
         self.teamMoney = robot_controller.get_team_money()
         self.bot1Spot = self.teamBots[0] 
-        
+
 
 class MonteCarloTreeSearchNode():
     def __init__(self, state, parent=None, parent_action=None):

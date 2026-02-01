@@ -64,6 +64,35 @@ class BotPlayer:
         return best_pos
 
     def play_turn(self, controller: RobotController):
+       currmap = controller.get_map(controller.get_team()).tiles
+       bot1ID = controller.get_team_bot_ids(controller.get_team())[1]
+       #print("Bot 1 ID:", bot1ID)
+       #print("Position:", controller.get_bot_state(bot1ID)['x'], controller.get_bot_state(bot1ID)['y'])
+       if (controller.can_move(bot1ID,  controller.get_bot_state(bot1ID)['x']+1, controller.get_bot_state(bot1ID)['y'])):
+            print("Bot 1 can move RIGHT to:", controller.get_bot_state(bot1ID)['x']+1, controller.get_bot_state(bot1ID)['y'])
+       if (controller.can_move(bot1ID,  controller.get_bot_state(bot1ID)['x']-1, controller.get_bot_state(bot1ID)['y'])):
+            print("Bot 1 can move LEFT to:", controller.get_bot_state(bot1ID)['x']-1, controller.get_bot_state(bot1ID)['y'])
+       
+    """ for x in range(len(currmap)):
+        for y in range(len(currmap[0])):
+            if (controller.can_move(bot1ID, x, y)):
+                print("YAYYYYYYYY Bot 1 can move to:", x, y)
+            else: 
+                print("Bot 1 cannot move to:", x, y)
+
+       
+       bot2ID = controller.get_team_bot_ids(controller.get_team())[0]
+       for x in range(len(currmap)):
+        for y in range(len(currmap[0])):
+            if (controller.can_move(bot2ID, x, y)):
+                controller.move(bot2ID, x, y)
+                break"""
+       
+      
+       #can_move= controller.can_move(controller.get_team()[0])
+       
+       
+    def stupidTurn(self, controller: RobotController):
         my_bots = controller.get_team_bot_ids(controller.get_team())
         if not my_bots: return
     
