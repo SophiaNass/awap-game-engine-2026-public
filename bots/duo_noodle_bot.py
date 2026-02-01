@@ -7,17 +7,6 @@ from robot_controller import RobotController
 from item import Pan, Plate, Food
 
 
-
-enum BotActions(Enum):
-
-    NONE = 0
-    COOK_EGG = 1
-    COOK_MEAT = 2
-    CHOP_ONION = 3
-    CHOP_MEAT = 4
-    BUY_PLATE = 5
-    BUY_PAN = 6
-
 class BotPlayer:
     def __init__(self, map_copy):
         self.map = map_copy
@@ -157,7 +146,7 @@ class BotPlayer:
             else:
                 return 0
             
-    def move(self, controller: RobotController, ):
+    # def move(self, controller: RobotController, ):
 
         
     
