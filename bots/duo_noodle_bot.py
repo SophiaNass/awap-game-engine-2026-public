@@ -74,7 +74,7 @@ class MonteCarloTreeSearchNode():
     def rollout(self):
         rollout_controller = copy.deepcopy(self.controller)
         depth = 0
-        max_depth = 20  # Limit rollout depth to prevent infinite loops
+        max_depth = 1  # Limit rollout depth to prevent infinite loops
         while not self.botPlayer.is_game_over(rollout_controller) and depth < max_depth:
             # Get legal moves
             possible_moves = self.botPlayer.legal_moves(rollout_controller)
@@ -228,7 +228,7 @@ class BotPlayer:
                         #print(currUsefulNeighbor[0].tile_name)
                         match currUsefulNeighbor[0].tile_name:
                             case "SINK":
-                                if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
+                                if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3])
 
@@ -318,7 +318,7 @@ class BotPlayer:
                                 
                             case "COOKER":
                                 #might error here with cooking progress
-                                if (updatedNeighborTile.item is not None and updatedNeighborTile.item["type"] == "Food" and itemInHand is None):
+                                if (updatedNeighborTile.item is not None and updatedNeighborTile.item.to_dict()["type"] == "Food" and itemInHand is None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 3])
                                         
@@ -331,7 +331,7 @@ class BotPlayer:
                                                     legal_moves.append([tempx, tempy, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 4])
-                                if (itemInHand["type"] == "Pan" and updatedNeighborTile.item is None):
+                                if (itemInHand is not None and itemInHand["type"] == "Pan" and updatedNeighborTile.item is None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
 
@@ -539,8 +539,8 @@ class BotPlayer:
                                         legal_moves.append([nx, ny, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 4])
 
 
-                                        
-                                if itemInHand is not None and (updatedNeighborTile.item is None or itemInHand["type"] ==  updatedNeighborTile.item['type']):
+                                    
+                                if itemInHand is not None and (updatedNeighborTile.item is None or itemInHand["type"] ==  updatedNeighborTile.item.to_dict()["type"]):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
                                         
@@ -631,13 +631,13 @@ class BotPlayer:
 
             elif (curr_move[3] == 1):
                 if not controller.can_move(bot_id,  dx, dy):
-                            print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
+                            print(f"WHATTTTT Bot {bot_id} at ({sx}, {sy})cannot move to ({curr_move[0]}, {curr_move[1]})")
                 else:
                     controller.move(bot_id,  dx, dy)
             else:
                 if(curr_move[3] == 4):
                     if not controller.can_move(bot_id,  dx, dy):
-                        print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
+                        print(f"WHATTTTT Bot {bot_id} at ({sx}, {sy}) cannot move to ({curr_move[0]}, {curr_move[1]})")
                     else:
                         controller.move(bot_id,  dx, dy)
                 
@@ -646,7 +646,7 @@ class BotPlayer:
                         pass  # no-op / wait
 
                     case BotActions.COOK:
-                        controller.cook(bot_id, curr_move[2][1][0], curr_move[2][1][1])
+                        controller.start_cook(bot_id, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.CHOP:
@@ -733,7 +733,7 @@ class BotPlayer:
                     
                 if (curr_move[3] == 2):
                     if not controller.can_move(bot_id,  dx, dy):
-                        print(f"WHATTTTT Bot {bot_id} cannot move to ({dx}, {dy})")
+                        print(f"WHATTTTT Bot {bot_id} at ({sx}, {sy})cannot move to ({dx}, {dy})")
                     else:
                         controller.move(bot_id,  dx, dy)
 
