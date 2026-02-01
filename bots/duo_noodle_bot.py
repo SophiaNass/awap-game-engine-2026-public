@@ -141,7 +141,7 @@ class BotPlayer:
             
             retList.append((legal_moves))
         return retList
-    
+
 #retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
     def get_total_actions(self, controller: RobotController):
         retList = []
