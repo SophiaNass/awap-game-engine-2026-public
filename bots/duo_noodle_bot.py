@@ -104,18 +104,20 @@ class BotPlayer:
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
                                                     legal_moves.append((tempx, tempy, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 2))
-
-
                                     else:
-
                                         legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4])
                                     #moves to nx,ny then d
                                 if (currUsefulNeighbor[0].num_dirty_plates > 0):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 3])
-                                    # Add all moves you can do from here after action 
-                                        # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
-                                   
+
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4])
                             case "COUNTER":
