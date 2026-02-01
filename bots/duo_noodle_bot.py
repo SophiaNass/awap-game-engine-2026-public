@@ -28,118 +28,11 @@ from item import Pan, Plate, Food
 import copy
 
 
-class GameState:
-    """
-    Wrapper class for game state that MCTS can work with.
-    Implements required methods: get_legal_actions(), move(), 
-    is_game_over(), game_result()
-    """
-    def __init__(self, controller: RobotController, bot_player: 'BotPlayer', state_dict=None):
-        self.controller = controller
-        self.bot_player = bot_player
-        
-        # Store lightweight state representation
-        if state_dict is None:
-            self.state_dict = self._serialize_state()
-        else:
-            self.state_dict = state_dict
-    
-    def _serialize_state(self):
-        """
-        NEW METHOD: Serialize current game state to a dictionary
-        """
-        team = self.controller.get_team()
-        bot_ids = self.controller.get_team_bot_ids(team)
-        
-        state = {
-            'turn': self.controller.get_turn(),
-            'team_money': self.controller.get_team_money(team),
-            'enemy_money': self.controller.get_team_money(self.controller.get_enemy_team()),
-            'bots': {},
-            'orders': self.controller.get_orders(team),  # FIXED: added team parameter
-        }
-        
-        # Store bot states
-        for bot_id in bot_ids:
-            bot_state = self.controller.get_bot_state(bot_id)
-            if bot_state:
-                state['bots'][bot_id] = {
-                    'x': bot_state['x'],
-                    'y': bot_state['y'],
-                    'holding': bot_state['holding']
-                }
-        
-        return state
-    
-    def get_legal_actions(self):
-        """Returns all legal joint moves for both bots"""
-        return self.bot_player.legal_moves(self.controller)
-    
-    def move(self, action):
-        """
-        Apply an action and return a new game state
-        """
-        new_state_dict = copy.deepcopy(self.state_dict)
-        
-        # Simulate the effects of the move
-        for i, bot_move in enumerate(action):
-            bot_id = self.controller.get_team_bot_ids(self.controller.get_team())[i]
-            
-            # Update position
-            if bot_move[3] in [1, 2, 4]:
-                new_state_dict['bots'][bot_id]['x'] = bot_move[0]
-                new_state_dict['bots'][bot_id]['y'] = bot_move[1]
-            
-            # Simulate action effects
-            action_type = bot_move[2][0]
-            if action_type == BotActions.SUBMIT:
-                new_state_dict['team_money'] += 100  # Approximate
-        
-        new_state_dict['turn'] += 1
-        
-        return GameState(self.controller, self.bot_player, new_state_dict)
-    
-    def is_game_over(self):
-        """Check if game is over"""
-        return self.state_dict['turn'] >= 250
-    
-    def game_result(self):
-        """
-        Returns game result from current player's perspective
-        1 for win, -1 for loss, 0 for draw
-        """
-        our_money = self.state_dict['team_money']
-        their_money = self.state_dict['enemy_money']
-        
-        if our_money > their_money:
-            return 1
-        elif their_money > our_money:
-            return -1
-        else:
-            return 0
-    
-    def evaluate_heuristic(self):
-        """
-        NEW METHOD: Evaluate the current state with a heuristic
-        """
-        score = 0
-        
-        money_diff = self.state_dict['team_money'] - self.state_dict['enemy_money']
-        score += money_diff * 10
-        
-        for bot_id, bot_state in self.state_dict['bots'].items():
-            if bot_state['holding'] is not None:
-                score += 5
-        
-        active_orders = [o for o in self.state_dict['orders'] if o['is_active']]
-        score += len(active_orders) * 2
-        
-        return score
-
 
 class MonteCarloTreeSearchNode():
-    def __init__(self, state, parent=None, parent_action=None):
-        self.state = state
+    def __init__(self, controller: RobotController, botPlayer: 'BotPlayer', parent=None, parent_action=None):
+        self.botPlayer = botPlayer
+        self.controller = controller
         self.parent = parent
         self.parent_action = parent_action
         self.children = []
@@ -151,7 +44,7 @@ class MonteCarloTreeSearchNode():
         self._untried_actions = self.untried_actions()
         return
     def untried_actions(self):
-        self._untried_actions = self.state.get_legal_actions()
+        self._untried_actions = self.botPlayer.legal_moves(self.controller)
         return self._untried_actions
     
     def q(self):
@@ -161,30 +54,49 @@ class MonteCarloTreeSearchNode():
     def n(self):
         return self._number_of_visits
     def expand(self):
-	
         action = self._untried_actions.pop()
-        next_state = self.state.move(action)
+        new_controller = copy.deepcopy(self.controller)
+        self.botPlayer.make_move(new_controller, action)
         child_node = MonteCarloTreeSearchNode(
-            next_state, parent=self, parent_action=action)
-
+            new_controller, 
+            self.botPlayer,
+            parent=self, 
+            parent_action=action
+        )
         self.children.append(child_node)
-        return child_node   
+        return child_node
     
 
     def is_terminal_node(self):
-        return self.state.is_game_over()
+        return self.botPlayer.is_game_over(self.controller)
     
 
     def rollout(self):
-        current_rollout_state = self.state
-        
-        while not current_rollout_state.is_game_over():
+        rollout_controller = copy.deepcopy(self.controller)
+        depth = 0
+        max_depth = 20  # Limit rollout depth to prevent infinite loops
+        while not self.botPlayer.is_game_over(rollout_controller) and depth < max_depth:
+            # Get legal moves
+            possible_moves = self.botPlayer.legal_moves(rollout_controller)
             
-            possible_moves = current_rollout_state.get_legal_actions()
+            if not possible_moves:
+                break
             
+            # Pick random move
             action = self.rollout_policy(possible_moves)
-            current_rollout_state = current_rollout_state.move(action)
-        return current_rollout_state.game_result()  
+            
+            # Apply it
+            self.botPlayer.make_move(rollout_controller, action)
+            
+            depth += 1
+        
+        # Return game result (or heuristic if hit max depth)
+        if depth >= max_depth:
+            # Use heuristic evaluation instead of game_result
+            return self.botPlayer.evaluate_state(rollout_controller)
+        else:
+            return self.botPlayer.game_result(rollout_controller)
+            
     
 
     def backpropagate(self, result):
@@ -216,8 +128,7 @@ class MonteCarloTreeSearchNode():
                 current_node = current_node.best_child()
         return current_node
 
-    def best_action(self):
-        simulation_no = 100
+    def best_action(self, simulation_no = 100):
         
         
         for i in range(simulation_no):
@@ -267,6 +178,7 @@ class BotPlayer:
         self.megaDict = {}
         
         self.state = 0
+        self.mcts_simulations = 20 
 
 
     def getMegaDict(self, controller: RobotController):
@@ -313,7 +225,7 @@ class BotPlayer:
     
 
                         itemInHand = controller.get_bot_state(bot_id)['holding']
-                        print(currUsefulNeighbor[0].tile_name)
+                        #print(currUsefulNeighbor[0].tile_name)
                         match currUsefulNeighbor[0].tile_name:
                             case "SINK":
                                 if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
@@ -359,7 +271,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4])
                                     
-                                    if (updatedNeighborTile.item is Food and updatedNeighborTile.item.can_chop):
+                                    if (isinstance(updatedNeighborTile.item, Food) and updatedNeighborTile.item.can_chop):
                                         if dx == dy == 0:
                                             legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 3])
 
@@ -429,7 +341,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
                                 
@@ -519,7 +431,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_PAN,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.EGG, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                if (controller.can_buy(bot_id, FoodType.EGG, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
                                 
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_EGG,currUsefulNeighbor[1]], 3])
@@ -534,7 +446,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_EGG,currUsefulNeighbor[1]], 4])
 
-                                if (controller.can_buy(bot_id, ShopCosts.ONION, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                if (controller.can_buy(bot_id, FoodType.ONIONS, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
                                 
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_ONION,currUsefulNeighbor[1]], 3])
@@ -549,7 +461,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_ONION,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.MEAT, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                if (controller.can_buy(bot_id, FoodType.MEAT, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
                                 
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_MEAT,currUsefulNeighbor[1]], 3])
@@ -564,7 +476,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_MEAT,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.NOODLES, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                if (controller.can_buy(bot_id, FoodType.NOODLES, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
                                 
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_NOODLES,currUsefulNeighbor[1]], 3])
@@ -579,7 +491,7 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_NOODLES,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.SAUCE, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                if (controller.can_buy(bot_id, FoodType.SAUCE, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
                                 
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_SAUCE,currUsefulNeighbor[1]], 3])
@@ -670,7 +582,7 @@ class BotPlayer:
             
 
                         
-        print(legal_moves)
+        #print(legal_moves)
         return legal_moves
 
     def legal_moves(self, controller: RobotController):
@@ -701,35 +613,34 @@ class BotPlayer:
 
 
     def make_move(self, controller: RobotController, move):
-        for x in range(2):
-            curr_move = move[x]
-            bot_id = controller.get_team_bot_ids(controller.get_team())[x]
+        start_positions = {}
+        for bot_id in controller.get_team_bot_ids(controller.get_team()):
+            state = controller.get_bot_state(bot_id)
+            start_positions[bot_id] = (state['x'], state['y'])
 
-            x,y = controller.get_bot_position(bot_id)
+        for n in range(2):
+            curr_move = move[n]
+            bot_id = controller.get_team_bot_ids(controller.get_team())[n]
+
+            sx, sy = start_positions[bot_id]
+            dx = curr_move[0] - sx
+            dy = curr_move[1] - sy
 
             if (curr_move[3] == 0):
-                break
+                continue
 
             elif (curr_move[3] == 1):
-                if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
+                if not controller.can_move(bot_id,  dx, dy):
                             print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
                 else:
-                    controller.move(bot_id,  curr_move[0] - x, curr_move[1] - y)
+                    controller.move(bot_id,  dx, dy)
             else:
                 if(curr_move[3] == 4):
-                    if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
+                    if not controller.can_move(bot_id,  dx, dy):
                         print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
                     else:
-                        controller.move(bot_id,  curr_move[0] - x, curr_move[1] - y)
-                # create casing
-
-
-                #action = curr_move[2] = [BotActions.ACTION, [target_x, target_y]], where
-                # target x, target y is the tile the action is being performed on (eg sink coord)
-                # just need to run actionfunction based on what enum is at the target coords 
-                # curr_move[2[1]] = [target_x, target_y]
-
-
+                        controller.move(bot_id,  dx, dy)
+                
                 match curr_move[2][0]:
                     case BotActions.NONE:
                         pass  # no-op / wait
@@ -759,7 +670,7 @@ class BotPlayer:
 
                     case BotActions.BUY_ONION:
                         # handle buy onion
-                        controller.buy(bot_id, FoodType.ONION, curr_move[2][1][0], curr_move[2][1][1])
+                        controller.buy(bot_id, FoodType.ONIONS, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.BUY_MEAT:
@@ -782,12 +693,11 @@ class BotPlayer:
                         
 
                     case BotActions.PLACE_ITEM:
-                        controller.place(bot_id, curr_move[2][1][0], curr_move[2][1][0])
+                        controller.place(bot_id, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.TRASH:
-                        controller.trash(bot_id, curr_move[2][1][0], curr_move[2][1][0])
-
+                        controller.trash(bot_id, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.TAKE_FROM_COUNTER:
@@ -822,10 +732,10 @@ class BotPlayer:
                         raise ValueError(f"Unhandled BotAction: {curr_move[2][0]}")
                     
                 if (curr_move[3] == 2):
-                    if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
-                        print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
+                    if not controller.can_move(bot_id,  dx, dy):
+                        print(f"WHATTTTT Bot {bot_id} cannot move to ({dx}, {dy})")
                     else:
-                        controller.move(bot_id,  curr_move[0] - x, curr_move[1] - y)
+                        controller.move(bot_id,  dx, dy)
 
              
                     #create cases by enum action
@@ -835,12 +745,12 @@ class BotPlayer:
         
 
     def is_game_over(self, controller: RobotController):
-        if controller.get_turn() >= 250:
+        if controller.get_turn() >= 500:
             return True
         return False
     
     def game_result(self, controller: RobotController):
-        if controller.is_game_over(controller):
+        if self.is_game_over(controller):
             ours = controller.get_team_money(controller.get_team())
             theirs = controller.get_team_money(controller.get_enemy_team())
             if ours > theirs:
@@ -851,16 +761,38 @@ class BotPlayer:
             else:
                 return 0
    
+    def evaluate_state(self, controller: RobotController):
+        """
+        Heuristic evaluation for non-terminal states.
+        Returns value in range [-1, 1] indicating how good the state is.
+        """
+        ours = controller.get_team_money(controller.get_team())
+        theirs = controller.get_team_money(controller.get_enemy_team())
         
+        money_diff = ours - theirs
+        
+        # Normalize to roughly [-1, 1]
+        heuristic = max(-1.0, min(1.0, money_diff / 100.0))
+        
+        return heuristic
 
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
-        new_controller = copy.deepcopy(controller)
-        new_controller.move(new_controller.get_team_bot_ids(controller.get_team())[1],0,1)  #dummy move to update internal state
-        controller.move(controller.get_team_bot_ids(controller.get_team())[1],0,1)  #dummy move to update internal state
-        if controller.get_team() == Team.RED:
-            print(new_controller.get_map(Team.RED).tiles)
-            #print(self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[1]))
-        print('-----')
+         #print(f"Turn {controller.get_turn()}: Starting MCTS...")
+                
+                # Create root node with current controller state
+        else: 
+            new_controller = copy.deepcopy(controller)
+            root_node = MonteCarloTreeSearchNode(controller=new_controller, botPlayer= self)
+            
+            
+            # Run MCTS
+            best_child = root_node.best_action(simulation_no=self.mcts_simulations)
+            best_move = best_child.parent_action
+            
+            # Execute the best move on the REAL controller (only once!)
+            self.make_move(controller, best_move)
+            
+        #print(f"MCTS done. Score: {best_child.q()}/{best_child.n()}")
    
