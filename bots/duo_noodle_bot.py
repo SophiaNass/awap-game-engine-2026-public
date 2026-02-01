@@ -333,7 +333,7 @@ class BotPlayer:
                                 
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_MEAT,currUsefulNeighbor[1]], 3])
-                                        
+                                        #please work
                                         actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
                                         for i in range(len(actions)):
                                             adx, ady = actions[i]
