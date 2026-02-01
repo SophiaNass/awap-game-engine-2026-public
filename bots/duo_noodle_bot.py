@@ -1,8 +1,10 @@
 import random
-from collections import deque
+from collections import deque, defaultdict
 from typing import Tuple, Optional, List
 from enum import Enum
 from itertools import product
+import numpy as np
+import copy
 
 from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
@@ -591,13 +593,13 @@ class BotPlayer:
                 if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
                             print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
                 else:
-                    controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
+                    controller.move(bot_id,  curr_move[0] - x, curr_move[1] - y)
             else:
                 if(curr_move[3] == 4):
                     if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
                         print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
                     else:
-                        controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
+                        controller.move(bot_id,  curr_move[0] - x, curr_move[1] - y)
                 # create casing
 
 
@@ -622,36 +624,36 @@ class BotPlayer:
 
                     case BotActions.BUY_PLATE:
                         # handle buy plate
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.PLATE)
+                        controller.buy(bot_id, FoodType.PLATE, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.BUY_PAN:
                         # handle buy pan
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.PAN)
+                        controller.buy(bot_id, FoodType.PAN, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.BUY_EGG:
                         # handle buy egg
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.EGG)
+                        controller.buy(bot_id, FoodType.EGG, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.BUY_ONION:
                         # handle buy onion
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.ONION)
+                        controller.buy(bot_id, FoodType.ONION, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.BUY_MEAT:
                         # handle buy meat
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.MEAT)
+                        controller.buy(bot_id, FoodType.MEAT, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.BUY_NOODLES:
                         # handle buy noodles
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.NOODLES)
+                        controller.buy(bot_id, FoodType.NOODLES, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.BUY_SAUCE:
                         # handle buy sauce
-                        controller.buy(bot_id, curr_move[2][1][0], curr_move[2][1][1], FoodType.SAUCE)
+                        controller.buy(bot_id, FoodType.SAUCE, curr_move[2][1][0], curr_move[2][1][1])
                         
 
                     case BotActions.PICKUP:
@@ -702,7 +704,7 @@ class BotPlayer:
                     if not controller.can_move(bot_id,  curr_move[0] - x, curr_move[1] - y):
                         print(f"WHATTTTT Bot {bot_id} cannot move to ({curr_move[0]}, {curr_move[1]})")
                     else:
-                        controller.move_bot(bot_id,  curr_move[0] - x, curr_move[1] - y)
+                        controller.move(bot_id,  curr_move[0] - x, curr_move[1] - y)
 
              
                     #create cases by enum action
@@ -733,7 +735,11 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
+        new_controller = copy.deepcopy(controller)
+        new_controller.move(new_controller.get_team_bot_ids(controller.get_team())[1],0,1)  #dummy move to update internal state
+        controller.move(controller.get_team_bot_ids(controller.get_team())[1],0,1)  #dummy move to update internal state
         if controller.get_team() == Team.RED:
-            print(self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[1]))
+            print(new_controller.get_map(Team.RED).tiles)
+            #print(self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[1]))
         print('-----')
    
