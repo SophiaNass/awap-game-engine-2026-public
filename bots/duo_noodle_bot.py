@@ -31,8 +31,8 @@ class BotActions(Enum):
     TAKE_FROM_COUNTER = 46
     TAKE_FROM_PAN = 49
     TAKE_CLEAN_PLATE = 53
-    PUT_DIRTY_PLATE = 57
-    WASH_SINK = 61
+    PUT_DIRTY_PLATE = 57 
+    WASH_SINK = 61 
     FOOD_TO_PLATE = 65
     SUBMIT = 69
 
@@ -89,9 +89,11 @@ class BotPlayer:
                 if (nx, ny) in self.megaDict.keys():
                     for j in range(len(self.megaDict[(nx, ny)])): # go over each action
                         currUsefulNeighbor = self.megaDict[(nx, ny)][j]
+
+                        itemInHand = controller.get_bot_state(bot_id)['holding']
                         match currUsefulNeighbor[0].title:
                             case "SINK":
-                                if (controller.get_bot_state(bot_id)['holding']["type"] == "Plate" and controller.get_bot_state(bot_id)['holding']['dirty'] == True):
+                                if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
                                     if dx == dy == 0:
                                         legal_moves.append((nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3))
                                         
@@ -108,10 +110,26 @@ class BotPlayer:
                                    
                                     else:
                                         legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4))
-                            case TileType.COUNTER:
-                                legal_moves.append((nx, ny, "COUNTER", 2))
+                            case "COUNTER":
+                                if (currUsefulNeighbor[0].item is not None):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 3))
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4))
+                                    
+                                    if (currUsefulNeighbor[0].item is Food and currUsefulNeighbor[0].item.can_chop):
+                                        if dx == dy == 0:
+                                            legal_moves.append((nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 3))
+                                        else:
+                                            legal_moves.append((nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 4))
+                                if currUsefulNeighbor[0].item is None and itemInHand is not None:
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3))
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4))
+                            
                             case "SINKTABLE":
-                                if (currUsefulNeighbor.num_clean_plates > 0 and controller.get_bot_state(bot_id)['holding'] == None):
+                                if (currUsefulNeighbor.num_clean_plates > 0 and itemInHand == None):
                                     if dx == dy == 0:
                                         legal_moves.append((nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 3))
                                         
@@ -121,16 +139,31 @@ class BotPlayer:
                                         legal_moves.append((nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 4))
                                        
                                 
-                            case TileType.COOKER:
+                            case "COOKER":
                                 legal_moves.append((nx, ny, "COOKER", 2))
-                            case TileType.TRASH:
-                                legal_moves.append((nx, ny, "TRASH", 2))
+                            case "TRASH":
+                                if (itemInHand is not None and itemInHand["type"] == "Food"):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3))
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4))
+                                if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['food'] != []):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 3))
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4))
                             case TileType.SHOP:
                                 legal_moves.append((nx, ny, "SHOP", 2))
                             case TileType.BOX:
                                 legal_moves.append((nx, ny, "BOX", 2))
-                            case TileType.SUBMIT:
-                                legal_moves.append((nx, ny, "SUBMIT", 2))
+                            case "SUBMIT":
+                                if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['dirty'] == False):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 3))
+                                    else:
+                                        
+                                        legal_moves.append((nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 4))
+                            
                             case _:
                                 print("UNKNOWN TILE TYPE THATS WEIRDDDDDDD")
 
