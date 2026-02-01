@@ -86,20 +86,23 @@ class BotPlayer:
         self.megaDict = megaDict
         return megaDict
 
+
+
     def get_all_legal_moves(self, controller: RobotController, bot_id: int):
         legal_moves = []
         bot_state = controller.get_bot_state(bot_id)
-        bx, by = bot_state['x'], bot_state['y']
+        x, y = bot_state['x'], bot_state['y']
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
                 if dx == 0 and dy == 0:
+                    legal_moves.append((0, 0, 'STAY'))
                     continue
-                nx, ny = bx + dx, by + dy
+                nx, ny = x + dx, y + dy
                 if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                    legal_moves.append((dx, dy, ))
-                if self.megaDict.get((nx, ny)):
+                    legal_moves.append((nx, ny, 'MOVE'))
+                if (nx, ny) in self.megaDict.keys():
                     for i in range(len(self.megaDict[(nx, ny)])):
-                        legal_moves.append((self.megaDict[(nx, ny)][i], (nx, ny)))
+                        legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i]))
         return legal_moves
 
     def play_turn(self, controller: RobotController):
