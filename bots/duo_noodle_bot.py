@@ -186,7 +186,7 @@ class BotPlayer:
                                 
                             case "COOKER":
                                 #might error here with cooking progress
-                                if (updatedNeighborTile.item is not None):
+                                if (updatedNeighborTile.item is not None and itemInHand is None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 3])
                                         
