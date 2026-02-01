@@ -186,7 +186,7 @@ class BotPlayer:
                                 
                             case "COOKER":
                                 #might error here with cooking progress
-                                if (updatedNeighborTile.item is not None and updatedNeighborTile.cooking_progress >= updatedNeighborTile.item.cook_time):
+                                if (updatedNeighborTile.item is not None):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 3])
                                         
@@ -199,7 +199,21 @@ class BotPlayer:
                                                     legal_moves.append((tempx, tempy, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 2))
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 4])
-                                if (itemInHand is not None and itemInHand["type"] == "Pan" and itemInHand['food'] is not None):
+                                if (itemInHand["type"] == "Pan" and updatedNeighborTile.item is None):
+                                    if dx == dy == 0:
+                                        legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
+
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2))
+                                    else:
+                                        legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
+                                
+                                if (itemInHand is not None and itemInHand["type"] == "Food" and itemInHand['can_cook']):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.COOK,currUsefulNeighbor[1]], 3])
 
