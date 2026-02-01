@@ -570,27 +570,27 @@ class BotPlayer:
 
                     case BotActions.TAKE_FROM_PAN:
                         # handle take from pan
-                        ...
+                        controller.take_from_pan(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.TAKE_CLEAN_PLATE:
                         # handle take clean plate
-                        ...
+                        controller.take_clean_plate(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.PUT_DIRTY_PLATE:
                         # handle put dirty plate
-                        ...
+                        controller.put_dirty_plate_in_sink(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.WASH_SINK:
                         # handle wash sink
-                        ...
+                        controller.wash_sink(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.FOOD_TO_PLATE:
                         # handle food to plate
-                        ...
+                        controller.add_food_to_plate(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.SUBMIT:
                         # handle submit
-                        ...
+                        controller.submit(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case _:
                         raise ValueError(f"Unhandled BotAction: {curr_move[2][0]}")
