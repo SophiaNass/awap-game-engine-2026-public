@@ -89,6 +89,7 @@ class BotPlayer:
                 if (nx, ny) in self.megaDict.keys():
                     for j in range(len(self.megaDict[(nx, ny)])): # go over each action
                         currUsefulNeighbor = self.megaDict[(nx, ny)][j]
+                        
 
                         itemInHand = controller.get_bot_state(bot_id)['holding']
                         match currUsefulNeighbor[0].title:
@@ -162,15 +163,15 @@ class BotPlayer:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                             case TileType.SHOP:
                                 legal_moves.append([nx, ny, "SHOP", 2])
-                            case TileType.BOX:
-                                legal_moves.append([nx, ny, "BOX", 2])
+                            case "BOX":
+                                if itemInHand is not None:
+                                    legal_moves.append([nx, ny, [BotActions.PUT_ITEM_IN_BOX,currUsefulNeighbor[1]], 2])
                             case "SUBMIT":
                                 if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['dirty'] == False):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 3])
                                     else:
-                                        
-                                        legal_moves.append((nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 4))
+                                        legal_moves.append([nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 4])
                             
                             case _:
                                 print("UNKNOWN TILE TYPE THATS WEIRDDDDDDD")
