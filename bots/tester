@@ -14,7 +14,7 @@ class BotActions(Enum):
     COOK_MEAT = 2
     CHOP_ONION = 3
     CHOP_MEAT = 4
-    BUYd_PLATE = 5
+    BUY_PLATE = 5
     BUY_PAN = 6
     THROW_TRASH = 7
     BUY_PAN = 8
