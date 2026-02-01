@@ -141,6 +141,15 @@ class BotPlayer:
             
             retList.append((legal_moves))
         return retList
+    
+#retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
+    def get_total_actions(self, controller: RobotController):
+        retList = []
+        legal_list = self.get_all_legal_moves(controller)
+        for i in range(len(legal_list[0])):
+            for j in range(len(legal_list[1])):
+                retList.append([legal_list[0][i], legal_list[1][j]])
+        return retList
 
     def is_game_over(self, controller: RobotController):
         if controller.get_turn() >= 500:
@@ -158,6 +167,9 @@ class BotPlayer:
 
             else:
                 return 0
+            
+    def move(self, controller: RobotController, ):
+        print()
    
         
 
