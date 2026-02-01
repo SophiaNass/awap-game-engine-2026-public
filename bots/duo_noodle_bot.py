@@ -73,20 +73,18 @@ class BotPlayer:
        if (controller.can_move(bot1ID,  controller.get_bot_state(bot1ID)['x']-1, controller.get_bot_state(bot1ID)['y'])):
             print("Bot 1 can move LEFT to:", controller.get_bot_state(bot1ID)['x']-1, controller.get_bot_state(bot1ID)['y'])
        
-    """ for x in range(len(currmap)):
+       for x in range(len(currmap)):
         for y in range(len(currmap[0])):
+            print(x, y, "is", currmap[x][y].tile_name)
             if (controller.can_move(bot1ID, x, y)):
                 print("YAYYYYYYYY Bot 1 can move to:", x, y)
-            else: 
-                print("Bot 1 cannot move to:", x, y)
 
        
        bot2ID = controller.get_team_bot_ids(controller.get_team())[0]
        for x in range(len(currmap)):
         for y in range(len(currmap[0])):
             if (controller.can_move(bot2ID, x, y)):
-                controller.move(bot2ID, x, y)
-                break"""
+                print("YAYYYYYYYY Bot 2 can move to:", x, y)
        
       
        #can_move= controller.can_move(controller.get_team()[0])
