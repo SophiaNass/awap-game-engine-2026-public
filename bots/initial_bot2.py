@@ -7,6 +7,35 @@ from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
 from item import Pan, Plate, Food
 
+
+
+class GameState:
+    def __init__(self, robot_controller: RobotController):
+        self.currTurn = robot_controller.get_current_turn()
+        self.teamColor = robot_controller.get_team()
+        self.enemyColor = robot_controller.get_enemy_team()
+        self.orders = robot_controller.get_orders()
+        self.map = robot_controller.get_map()
+        self.teamBots = robot_controller.get_team_bot_ids()
+        self.teamMoney = robot_controller.get_team_money()
+        self.switchable = robot_controller.can_switch_maps()
+        self.switchStatus = robot_controller.get_switch_info()
+        self.possiblleMoves = []
+
+    def updateState(self, robot_controller: RobotController):
+        self.currTurn = robot_controller.get_current_turn()
+        self.teamColor = robot_controller.get_team()
+        self.enemyColor = robot_controller.get_enemy_team()
+        self.orders = robot_controller.get_orders()
+        self.map = robot_controller.get_map()
+        self.teamBots = robot_controller.get_team_bot_ids()
+        self.teamMoney = robot_controller.get_team_money()
+        self.bot1Spot = self.teamBots[0] 
+
+
+
+    
+
 class MonteCarloTreeSearchNode():
     def __init__(self, state, parent=None, parent_action=None):
         self.state = state
