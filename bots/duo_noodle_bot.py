@@ -123,7 +123,7 @@ class BotPlayer:
         return megaDict
 
 
-
+    # 0 = STAY, 1 = MOVE, 2 = INTERACT WITH TILE, 3 = INTERACT WITHOUT MOVING, 4 = INTERACT WITH TILE AND MOVE
     def get_all_legal_moves(self, controller: RobotController):
         retList = []
         for i in range(len(controller.get_team_bot_ids(controller.get_team()))):
@@ -135,24 +135,28 @@ class BotPlayer:
                 for dy in [-1, 0, 1]:
                     nx, ny = x + dx, y + dy
                     if dx == 0 and dy == 0:
-                        legal_moves.append((nx, ny, 'STAY'))
-                        continue
+                        if (nx, ny) in self.megaDict.keys():
+                            for j in range(len(self.megaDict[(nx, ny)])):
+                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][j], 3))
+                        else:
+                            legal_moves.append((nx, ny, 'STAY', 0))
+                            continue
                     nx, ny = x + dx, y + dy
                     fail = False
                     for i in range(len(retList)):
                         for j in range(len(retList[i])):
-                            print('here')
-                            print(retList)
-                            
                             if retList[i][j][0] == nx and retList[i][j][1] == ny:
                                 fail = True
                     if not fail:
                         
                         if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                            legal_moves.append((nx, ny, 'MOVE'))
+                            legal_moves.append((nx, ny, 'MOVE', 1))
                         if (nx, ny) in self.megaDict.keys():
                             for i in range(len(self.megaDict[(nx, ny)])):
-                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i]))
+                                if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
+                                    legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 4))
+                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 2))
+                            
             
             retList.append((legal_moves))
         return retList
@@ -189,5 +193,7 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
-        print(self.megaDict)
+        print('-----')
+        print(self.get_all_legal_moves(controller))
+        print('-----')
    
