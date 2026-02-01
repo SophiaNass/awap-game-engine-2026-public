@@ -115,7 +115,10 @@ class MonteCarloTreeSearchNode():
 
     def rollout_policy(self, possible_moves):
         
-        return possible_moves[np.random.randint(len(possible_moves))]
+        active_moves = [m for m in possible_moves if m[2][0] != BotActions.NONE]
+        if len(active_moves)>0:
+            return random.choice(active_moves)
+        return random.choice(possible_moves)
 
                                 
     def _tree_policy(self):
@@ -178,7 +181,7 @@ class BotPlayer:
         self.megaDict = {}
         
         self.state = 0
-        self.mcts_simulations = 20 
+        self.mcts_simulations = 8 
 
 
     def getMegaDict(self, controller: RobotController):
