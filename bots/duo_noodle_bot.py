@@ -361,19 +361,62 @@ class BotPlayer:
 
                             case "BOX":
                                 if itemInHand is None and updatedNeighborTile.item is not None:
-                                    legal_moves.append([nx, ny, [BotActions.PICKUP,currUsefulNeighbor[1]], 2])
+                                    if dx == dy == 0:
+                                        legal_moves.append([nx, ny, [BotActions.PICKUP,currUsefulNeighbor[1]], 3])
+                                        
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append([tempx, tempy, [BotActions.PICKUP,currUsefulNeighbor[1]], 2])
+                                    else:
+                                        legal_moves.append([nx, ny, [BotActions.PICKUP,currUsefulNeighbor[1]], 4])
 
 
                                 if itemInHand is not None and itemInHand["type"] == "Plate" and updatedNeighborTile.item is not None and (itemInHand['dirty'] == False or itemInHand["food"] != []):
-                                    legal_moves.append([nx, ny, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 2])
-       
+                                    if dx == dy == 0:
+                                        legal_moves.append([nx, ny, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 3])
+                                        
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append([tempx, tempy, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 2])
+                                    else:
+                                        legal_moves.append([nx, ny, [BotActions.FOOD_TO_PLATE,currUsefulNeighbor[1]], 4])
+
+
+                                        
                                 if itemInHand is not None and (updatedNeighborTile.item is None or itemInHand["type"] ==  updatedNeighborTile.item['type']):
-                                    legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2])
-                                    
+                                    if dx == dy == 0:
+                                        legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 3])
+                                        
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append([tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2])
+                                    else:
+                                        legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
+
                             case "SUBMIT":
                                 if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['dirty'] == False):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 3])
+                                        
+                                        actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
+                                        for i in range(len(actions)):
+                                            adx, ady = actions[i]
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append([tempx, tempy, [BotActions.SUBMIT,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.SUBMIT,currUsefulNeighbor[1]], 4])
                             
