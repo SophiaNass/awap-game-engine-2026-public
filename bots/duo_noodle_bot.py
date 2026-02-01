@@ -7,7 +7,11 @@ from game_constants import Team, TileType, FoodType, ShopCosts
 from robot_controller import RobotController
 from item import Pan, Plate, Food
 
+"""
+Actions:
 
+
+"""
 class BotActions(Enum):
     NONE = 0
     COOK = 1
