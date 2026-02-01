@@ -40,17 +40,8 @@ class BotPlayer:
 
         bot1 = controller.get_team_bot_ids(controller.get_team())[1]
         #print(controller.buy(bot1, FoodType.PLATE))
-        if(controller.get_turn() == 1):
-            controller.move(bot1, 0, 1)
-        elif(controller.get_turn() == 2):
-            controller.move(bot1, 0, 1)
-        elif(controller.get_turn() == 3):
-            controller.move(bot1, 1, 1)
-        elif(controller.get_turn() == 4):
-            controller.move(bot1, 1, 0)
-            print(controller.buy(bot1, ShopCosts.PLATE, controller.get_bot_state(bot1)['x']+1, controller.get_bot_state(bot1)['y']))
-        elif(controller.get_turn() == 5):
-            print(controller.submit(bot1, controller.get_bot_state(bot1)['x']+1, controller.get_bot_state(bot1)['y']-1))
+        controller.move(bot1, 1, 0)
+        controller.move(bot1, 0, 0)
        
         # print(self.get_all_legal_moves(controller))
         # print(self.get_all_legal_moves(controller, controller.get_team_bot_ids(controller.get_team())[1]))
