@@ -94,6 +94,7 @@ class BotPlayer:
     
 
                         itemInHand = controller.get_bot_state(bot_id)['holding']
+                        print(currUsefulNeighbor[0].tile_name)
                         match currUsefulNeighbor[0].tile_name:
                             case "SINK":
                                 if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
@@ -440,7 +441,7 @@ class BotPlayer:
                             case _:
                                 print("UNKNOWN TILE TYPE THATS WEIRDDDDDDD")
 
-                        legal_moves.append([nx, ny, self.megaDict[(nx, ny)][j], 3])
+                        
                     else:
                         legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 0])
                         continue
@@ -502,6 +503,7 @@ class BotPlayer:
     def play_turn(self, controller: RobotController):
         if controller.get_turn() == 1:
            self.getMegaDict(controller)
-        print(self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[0]))
+        if controller.get_team() == Team.RED:
+            print(self.get_legal_moves_per_bot(controller, controller.get_team_bot_ids(controller.get_team())[1]))
         print('-----')
    
