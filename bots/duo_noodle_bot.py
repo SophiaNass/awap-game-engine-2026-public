@@ -74,7 +74,7 @@ class MonteCarloTreeSearchNode():
     def rollout(self):
         rollout_controller = copy.deepcopy(self.controller)
         depth = 0
-        max_depth = 1  # Limit rollout depth to prevent infinite loops
+        max_depth = 4  # Limit rollout depth to prevent infinite loops
         while not self.botPlayer.is_game_over(rollout_controller) and depth < max_depth:
             # Get legal moves
             possible_moves = self.botPlayer.legal_moves(rollout_controller)
@@ -578,8 +578,9 @@ class BotPlayer:
                         continue
                 #nx, ny = x + dx, y + dy
                 if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                    legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 1])
-            
+                    if(dx !=0 or dy !=0):
+                        legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 1])
+                
 
                         
         #print(legal_moves)
