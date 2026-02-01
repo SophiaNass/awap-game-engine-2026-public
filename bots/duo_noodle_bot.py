@@ -134,11 +134,22 @@ class BotPlayer:
         return retList
 
     def is_game_over(self, controller: RobotController):
-        return controller.is_game_over()
+        if controller.get_turn() >= 500:
+            return True
+        return False
     
     def game_result(self, controller: RobotController):
-        return controller.game_result()
-    
+        if controller.is_game_over(controller):
+            ours = controller.get_team_money(controller.get_team())
+            theirs = controller.get_team_money(controller.get_enemy_team())
+            if ours > theirs:
+                return 1
+            elif theirs > ours:
+                return -1
+
+            else:
+                return 0
+            
     def move(self, controller: RobotController, ):
 
         
