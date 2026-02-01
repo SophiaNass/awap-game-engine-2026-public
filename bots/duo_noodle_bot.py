@@ -145,7 +145,7 @@ class BotPlayer:
         retList = []
         legal_list = self.get_all_legal_moves(controller)
         for i in range(len(legal_list[0])):
-            for j in range(len(legal_list[1])):
+            for j in range(len(legal_list[1]))                                                                                                                                                                                                             :
                 retList.append([legal_list[0][i], legal_list[1][j]])
         return retList
 
