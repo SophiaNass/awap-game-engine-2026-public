@@ -442,7 +442,7 @@ class BotPlayer:
 
                         legal_moves.append([nx, ny, self.megaDict[(nx, ny)][j], 3])
                     else:
-                        legal_moves.append([nx, ny, 'STAY', 0])
+                        legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 0])
                         continue
                 nx, ny = x + dx, y + dy
                 fail = False
