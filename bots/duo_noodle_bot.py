@@ -16,78 +16,25 @@ Actions:
 
 class BotActions(Enum):
     NONE = 0
-    COOK_UP = 1
-    COOK_DOWN = 2
-    COOK_LEFT = 3
-    COOK_RIGHT = 4
-    CHOP_UP = 5
-    CHOP_DOWN = 6
-    CHOP_LEFT = 7
-    CHOP_RIGHT = 8
-    BUY_PLATE_UP = 9
-    BUY_PLATE_DOWN = 10
-    BUY_PLATE_LEFT = 11
-    BUY_PLATE_RIGHT = 12
-    BUY_PAN_UP = 13
-    BUY_PAN_DOWN = 14
-    BUY_PAN_LEFT = 15
-    BUY_PAN_RIGHT = 16
-    BUY_EGG_UP = 17
-    BUY_EGG_DOWN = 18
-    BUY_EGG_LEFT = 19
-    BUY_EGG_RIGHT = 20
-    BUY_ONION_UP = 21
-    BUY_ONION_DOWN = 22
-    BUY_ONION_LEFT = 23
-    BUY_ONION_RIGHT = 24
-    BUY_MEAT_UP = 25
-    BUY_MEAT_DOWN = 26
-    BUY_MEAT_LEFT = 27
-    BUY_MEAT_RIGHT = 28
-    BUY_NOODLES_UP = 29
-    BUY_NOODLES_DOWN = 30
-    BUY_NOODLES_LEFT = 31
-    BUY_NOODLES_RIGHT = 32
-    BUY_SAUCE_UP = 33
-    BUY_SAUCE_DOWN = 34
-    BUY_SAUCE_LEFT = 35
-    BUY_SAUCE_RIGHT = 36
-    PICKUP_ITEM_UP = 37
-    PICKUP_ITEM_DOWN = 38
-    PICKUP_ITEM_LEFT = 39
-    PICKUP_ITEM_RIGHT = 40
-    PLACE_ITEM_UP = 41
-    PLACE_ITEM_DOWN = 42
-    PLACE_ITEM_LEFT = 43
-    PLACE_ITEM_RIGHT = 44
-    TRASH_UP = 45
-    TRASH_DOWN = 46
-    TRASH_LEFT = 47
-    TRASH_RIGHT = 48
-    TAKE_FROM_PAN_UP = 49
-    TAKE_FROM_PAN_DOWN = 50
-    TAKE_FROM_PAN_LEFT = 51
-    TAKE_FROM_PAN_RIGHT = 52
-    TAKE_CLEAN_PLATE_UP = 53
-    TAKE_CLEAN_PLATE_DOWN = 54
-    TAKE_CLEAN_PLATE_LEFT = 55
-    TAKE_CLEAN_PLATE_RIGHT = 56
-    PUT_DIRTY_PLATE_UP = 57
-    PUT_DIRTY_PLATE_DOWN = 58
-    PUT_DIRTY_PLATE_LEFT = 59
-    PUT_DIRTY_PLATE_RIGHT = 60
-    WASH_SINK_UP = 61
-    WASH_SINK_DOWN = 62
-    WASH_SINK_LEFT = 63
-    WASH_SINK_RIGHT = 64
-    FOOD_TO_PLATE_UP = 65
-    FOOD_TO_PLATE_DOWN = 66
-    FOOD_TO_PLATE_LEFT = 67
-    FOOD_TO_PLATE_RIGHT = 68
-    SUBMIT_UP = 69
-    SUBMIT_DOWN = 70
-    SUBMIT_LEFT = 71
-    SUBMIT_RIGHT = 72
+    COOK = 1
+    CHOP = 2
+    BUY_PLATE =3
+    BUY_PAN =4
+    BUY_EGG =5
+    BUY_ONION = 6
+    BUY_MEAT  = 7
+    BUY_NOODLES = 8 
+    BUY_SAUCE  = 9
+    PICKUP = 10
+    PLACE_ITEM = 41
+    TRASH = 45
+    TAKE_FROM_COUNTER = 46
+    TAKE_FROM_PAN = 49
+    TAKE_CLEAN_PLATE = 53
+    PUT_DIRTY_PLATE = 57
+    WASH_SINK = 61
+    FOOD_TO_PLATE = 65
+    SUBMIT = 69
 
 
 
@@ -117,15 +64,15 @@ class BotPlayer:
                             if (nx,ny) not in megaDict.keys():
                                 neighbor_tile = controller.get_tile(controller.get_team(), nx, ny)
                                 if neighbor_tile is not None and neighbor_tile.tile_name == "FLOOR":
-                                    megaDict[(nx,ny)] = [[curr_tile.tile_name, [x,y]]]
+                                    megaDict[(nx,ny)] = [[curr_tile, [x,y]]]
                             else:
-                                if not any(curr_tile.tile_name == item[0] for item in megaDict[(nx,ny)]):
-                                    megaDict[(nx,ny)].append([curr_tile.tile_name, [x,y]])
+                                if not any(curr_tile.tile_name == item[0].tile_name for item in megaDict[(nx,ny)]):
+                                    megaDict[(nx,ny)].append([curr_tile, [x,y]])
         self.megaDict = megaDict
         return megaDict
 
 
-    # 0 = STAY, 1 = MOVE, 2 = INTERACT WITH TILE, 3 = INTERACT WITHOUT MOVING, 4 = INTERACT WITH TILE AND MOVE
+    # 0 = STAY, 1 = MOVE ONLY, 2 = INTERACT WITH TILE, THEN MOVE, 3 = INTERACT WITHOUT MOVING, 4 = MOVE THEN INTERACT WITH TILE 
    
     
     def get_all_legal_moves(self, controller: RobotController):
@@ -137,11 +84,57 @@ class BotPlayer:
 
         for dx in [-1, 0, 1]:
             for dy in [-1, 0, 1]:
-                nx, ny = x + dx, y + dy
-                if dx == 0 and dy == 0:
-                    if (nx, ny) in self.megaDict.keys():
-                        for j in range(len(self.megaDict[(nx, ny)])):
-                            legal_moves.append((nx, ny, self.megaDict[(nx, ny)][j], 3))
+                nx, ny = x + dx, y + dy #these are coordinates
+                
+                if (nx, ny) in self.megaDict.keys():
+                    for j in range(len(self.megaDict[(nx, ny)])): # go over each action
+                        currUsefulNeighbor = self.megaDict[(nx, ny)][j]
+                        match currUsefulNeighbor[0].title:
+                            case "SINK":
+                                if (controller.get_bot_state(bot_id)['holding']["type"] == "Plate" and controller.get_bot_state(bot_id)['holding']['dirty'] == True):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3))
+                                        
+                                        # Add all moves you can do from here after action 
+                                        # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4))
+                                    #moves to nx,ny then d
+                                if (currUsefulNeighbor[0].num_dirty_plates > 0):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 3))
+                                    # Add all moves you can do from here after action 
+                                        # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                   
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4))
+                            case TileType.COUNTER:
+                                legal_moves.append((nx, ny, "COUNTER", 2))
+                            case "SINKTABLE":
+                                if (currUsefulNeighbor.num_clean_plates > 0 and controller.get_bot_state(bot_id)['holding'] == None):
+                                    if dx == dy == 0:
+                                        legal_moves.append((nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 3))
+                                        
+                                        # Add all moves you can do from here after action 
+                                        # legal_moves.append((nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                    else:
+                                        legal_moves.append((nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 4))
+                                       
+                                
+                            case TileType.COOKER:
+                                legal_moves.append((nx, ny, "COOKER", 2))
+                            case TileType.TRASH:
+                                legal_moves.append((nx, ny, "TRASH", 2))
+                            case TileType.SHOP:
+                                legal_moves.append((nx, ny, "SHOP", 2))
+                            case TileType.BOX:
+                                legal_moves.append((nx, ny, "BOX", 2))
+                            case TileType.SUBMIT:
+                                legal_moves.append((nx, ny, "SUBMIT", 2))
+                            case _:
+                                print("UNKNOWN TILE TYPE THATS WEIRDDDDDDD")
+
+                        legal_moves.append((nx, ny, self.megaDict[(nx, ny)][j], 3))
                     else:
                         legal_moves.append((nx, ny, 'STAY', 0))
                         continue
