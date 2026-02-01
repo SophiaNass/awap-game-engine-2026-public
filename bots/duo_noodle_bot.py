@@ -97,8 +97,9 @@ class BotPlayer:
             x, y = bot_state['x'], bot_state['y']
             for dx in [-1, 0, 1]:
                 for dy in [-1, 0, 1]:
+                    nx, ny = x + dx, y + dy
                     if dx == 0 and dy == 0:
-                        legal_moves.append((0, 0, 'STAY'))
+                        legal_moves.append((nx, ny, 'STAY'))
                         continue
                     nx, ny = x + dx, y + dy
                     fail = False
