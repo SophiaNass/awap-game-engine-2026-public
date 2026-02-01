@@ -509,17 +509,20 @@ class BotPlayer:
                 # target x, target y is the tile the action is being performed on (eg sink coord)
                 # just need to run actionfunction based on what enum is at the target coords 
                 # curr_move[2[1]] = [target_x, target_y]
+
+
                 match curr_move[2][0]:
                     case BotActions.NONE:
                         pass  # no-op / wait
 
                     case BotActions.COOK:
-                        # handle cook
-                        ...
+                        controller.cook(bot_id, curr_move[2][1][0], curr_move[2][1][1])
+                        
 
                     case BotActions.CHOP:
                         # handle chop
                         ...
+                        controller.chop(bot_id, curr_move[2][1][0], curr_move[2][1][1])
 
                     case BotActions.BUY_PLATE:
                         # handle buy plate
