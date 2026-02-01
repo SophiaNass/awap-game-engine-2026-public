@@ -100,10 +100,10 @@ class BotPlayer:
                                         actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
                                         for i in range(len(actions)):
                                             adx, ady = actions[i]
-                                            anx, any = nx + adx, ny + ady
-                                            if 0 <= anx < len(controller.get_map(controller.get_team()).tiles) and 0 <= any < len(controller.get_map(controller.get_team()).tiles[0]):
-                                                if controller.get_map(controller.get_team()).is_tile_walkable(anx, any):
-                                                    legal_moves.append((anx, any, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                            tempx, tempy = nx + adx, ny + ady
+                                            if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
+                                                if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
+                                                    legal_moves.append((tempx, tempy, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 2))
 
 
                                     else:
