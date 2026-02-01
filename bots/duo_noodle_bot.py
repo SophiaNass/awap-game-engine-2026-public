@@ -98,7 +98,7 @@ class BotPlayer:
                             case "SINK":
                                 if (itemInHand["type"] == "Plate" and itemInHand['dirty'] == True):
                                     if dx == dy == 0:
-                                        legal_moves.append((nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3))
+                                        legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 3])
 
                                         actions = [(0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1), (-1,0), (-1,1)]
                                         for i in range(len(actions)):
@@ -106,7 +106,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PUT_DIRTY_PLATE,currUsefulNeighbor[1]], 4])
                                     #moves to nx,ny then d
@@ -120,7 +120,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.WASH_SINK,currUsefulNeighbor[1]], 4])
 
@@ -135,7 +135,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_COUNTER,currUsefulNeighbor[1]], 4])
                                     
@@ -149,7 +149,7 @@ class BotPlayer:
                                                 tempx, tempy = nx + adx, ny + ady
                                                 if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                     if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                        legal_moves.append((tempx, tempy, [BotActions.CHOP,currUsefulNeighbor[1]], 2))
+                                                        legal_moves.append([tempx, tempy, [BotActions.CHOP,currUsefulNeighbor[1]], 2])
                                         else:
                                             legal_moves.append([nx, ny, [BotActions.CHOP,currUsefulNeighbor[1]], 4])
 
@@ -164,7 +164,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.PLACE_ITEM,currUsefulNeighbor[1]], 4])
                             
@@ -179,7 +179,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_CLEAN_PLATE,currUsefulNeighbor[1]], 4])
                                         
@@ -196,7 +196,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TAKE_FROM_PAN,currUsefulNeighbor[1]], 4])
                                 if (itemInHand is not None and itemInHand["type"] == "Pan" and itemInHand['food'] is not None):
@@ -209,7 +209,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.COOK,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.COOK,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.COOK,currUsefulNeighbor[1]], 4])
 
@@ -227,7 +227,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.TRASH,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.TRASH,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                                 if (itemInHand is not None and itemInHand["type"] == "Plate" and itemInHand['food'] != []):
@@ -240,7 +240,7 @@ class BotPlayer:
                                             tempx, tempy = nx + adx, ny + ady
                                             if 0 <= tempx < len(controller.get_map(controller.get_team()).tiles) and 0 <= tempy < len(controller.get_map(controller.get_team()).tiles[0]):
                                                 if controller.get_map(controller.get_team()).is_tile_walkable(tempx, tempy):
-                                                    legal_moves.append((tempx, tempy, [BotActions.TRASH,currUsefulNeighbor[1]], 2))
+                                                    legal_moves.append([tempx, tempy, [BotActions.TRASH,currUsefulNeighbor[1]], 2])
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
                             case "SHOP":
@@ -260,9 +260,9 @@ class BotPlayer:
                             case _:
                                 print("UNKNOWN TILE TYPE THATS WEIRDDDDDDD")
 
-                        legal_moves.append((nx, ny, self.megaDict[(nx, ny)][j], 3))
+                        legal_moves.append([nx, ny, self.megaDict[(nx, ny)][j], 3])
                     else:
-                        legal_moves.append((nx, ny, 'STAY', 0))
+                        legal_moves.append([nx, ny, 'STAY', 0])
                         continue
                 nx, ny = x + dx, y + dy
                 fail = False
@@ -273,12 +273,12 @@ class BotPlayer:
                 if not fail:
                     
                     if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                        legal_moves.append((nx, ny, 'MOVE', 1))
+                        legal_moves.append([nx, ny, 'MOVE', 1])
                     if (nx, ny) in self.megaDict.keys():
                         for i in range(len(self.megaDict[(nx, ny)])):
                             if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
-                                legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 4))
-                            legal_moves.append((nx, ny, self.megaDict[(nx, ny)][i], 2))
+                                legal_moves.append([nx, ny, self.megaDict[(nx, ny)][i], 4])
+                            legal_moves.append([nx, ny, self.megaDict[(nx, ny)][i], 2])
                         
         
         retList.append((legal_moves))
