@@ -16,6 +16,127 @@ Actions:
 
 """
 
+import random
+from collections import deque, defaultdict
+from typing import Tuple, Optional, List
+from enum import Enum
+from itertools import product
+import numpy as np
+from game_constants import Team, TileType, FoodType, ShopCosts
+from robot_controller import RobotController
+from item import Pan, Plate, Food
+import copy
+
+
+class GameState:
+    """
+    Wrapper class for game state that MCTS can work with.
+    Implements required methods: get_legal_actions(), move(), 
+    is_game_over(), game_result()
+    """
+    def __init__(self, controller: RobotController, bot_player: 'BotPlayer', state_dict=None):
+        self.controller = controller
+        self.bot_player = bot_player
+        
+        # Store lightweight state representation
+        if state_dict is None:
+            self.state_dict = self._serialize_state()
+        else:
+            self.state_dict = state_dict
+    
+    def _serialize_state(self):
+        """
+        NEW METHOD: Serialize current game state to a dictionary
+        """
+        team = self.controller.get_team()
+        bot_ids = self.controller.get_team_bot_ids(team)
+        
+        state = {
+            'turn': self.controller.get_turn(),
+            'team_money': self.controller.get_team_money(team),
+            'enemy_money': self.controller.get_team_money(self.controller.get_enemy_team()),
+            'bots': {},
+            'orders': self.controller.get_orders(team),  # FIXED: added team parameter
+        }
+        
+        # Store bot states
+        for bot_id in bot_ids:
+            bot_state = self.controller.get_bot_state(bot_id)
+            if bot_state:
+                state['bots'][bot_id] = {
+                    'x': bot_state['x'],
+                    'y': bot_state['y'],
+                    'holding': bot_state['holding']
+                }
+        
+        return state
+    
+    def get_legal_actions(self):
+        """Returns all legal joint moves for both bots"""
+        return self.bot_player.legal_moves(self.controller)
+    
+    def move(self, action):
+        """
+        Apply an action and return a new game state
+        """
+        new_state_dict = copy.deepcopy(self.state_dict)
+        
+        # Simulate the effects of the move
+        for i, bot_move in enumerate(action):
+            bot_id = self.controller.get_team_bot_ids(self.controller.get_team())[i]
+            
+            # Update position
+            if bot_move[3] in [1, 2, 4]:
+                new_state_dict['bots'][bot_id]['x'] = bot_move[0]
+                new_state_dict['bots'][bot_id]['y'] = bot_move[1]
+            
+            # Simulate action effects
+            action_type = bot_move[2][0]
+            if action_type == BotActions.SUBMIT:
+                new_state_dict['team_money'] += 100  # Approximate
+        
+        new_state_dict['turn'] += 1
+        
+        return GameState(self.controller, self.bot_player, new_state_dict)
+    
+    def is_game_over(self):
+        """Check if game is over"""
+        return self.state_dict['turn'] >= 250
+    
+    def game_result(self):
+        """
+        Returns game result from current player's perspective
+        1 for win, -1 for loss, 0 for draw
+        """
+        our_money = self.state_dict['team_money']
+        their_money = self.state_dict['enemy_money']
+        
+        if our_money > their_money:
+            return 1
+        elif their_money > our_money:
+            return -1
+        else:
+            return 0
+    
+    def evaluate_heuristic(self):
+        """
+        NEW METHOD: Evaluate the current state with a heuristic
+        """
+        score = 0
+        
+        money_diff = self.state_dict['team_money'] - self.state_dict['enemy_money']
+        score += money_diff * 10
+        
+        for bot_id, bot_state in self.state_dict['bots'].items():
+            if bot_state['holding'] is not None:
+                score += 5
+        
+        active_orders = [o for o in self.state_dict['orders'] if o['is_active']]
+        score += len(active_orders) * 2
+        
+        return score
+
+
 class MonteCarloTreeSearchNode():
     def __init__(self, state, parent=None, parent_action=None):
         self.state = state
