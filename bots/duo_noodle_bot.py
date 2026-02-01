@@ -576,10 +576,10 @@ class BotPlayer:
                                 print("UNKNOWN TILE TYPE THATS WEIRDDDDDDD")
 
                         
-                    # else:
-                    #     legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 0])
-                    #     continue
-                #nx, ny = x + dx, y + dy
+                    else:
+                        legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 0])
+                        continue
+                nx, ny = x + dx, y + dy
                 if controller.get_map(controller.get_team()).is_tile_walkable(nx, ny):
                     if(dx !=0 or dy !=0):
                         legal_moves.append([nx, ny, [BotActions.NONE, [0,0]], 1])
@@ -588,9 +588,6 @@ class BotPlayer:
                         
         print(legal_moves)
 
-        for i in range(len(legal_moves)-1, -1, -1):
-            if legal_moves[i][0] == 0 and legal_moves[i][1] == 0 and legal_moves[i][2][0] == BotActions.NONE:
-                legal_moves.pop(i)
         return legal_moves
 
     def legal_moves(self, controller: RobotController):
