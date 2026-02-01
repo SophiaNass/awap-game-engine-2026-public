@@ -7,6 +7,8 @@ from robot_controller import RobotController
 from item import Pan, Plate, Food
 
 
+
+
 class BotPlayer:
     def __init__(self, map_copy):
         self.map = map_copy
@@ -119,7 +121,9 @@ class BotPlayer:
             
             retList.append((legal_moves))
         return retList
-
+    
+    
+    #retList = [[bot1_action1, bot1_action2, ...], [bot2_action1, bot2_action2, ...], ...]
     def get_total_actions(self, controller: RobotController):
         retList = []
         legal_list = self.get_all_legal_moves(controller)
