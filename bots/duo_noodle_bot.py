@@ -270,7 +270,7 @@ class BotPlayer:
                                         legal_moves.append([nx, ny, [BotActions.TRASH,currUsefulNeighbor[1]], 4])
 
                             case "SHOP":
-                                if (controller.can_buy(bot_id, ShopCosts.PLATE)):
+                                if (controller.can_buy(bot_id, ShopCosts.PLATE, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_PLATE,currUsefulNeighbor[1]], 3])
                                         
@@ -284,7 +284,8 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_PLATE,currUsefulNeighbor[1]], 4])
 
-                                if (controller.can_buy(bot_id, ShopCosts.PAN)):
+                                if (controller.can_buy(bot_id, ShopCosts.PAN, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_PAN,currUsefulNeighbor[1]], 3])
                                         
@@ -298,7 +299,8 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_PAN,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.EGG)):
+                                if (controller.can_buy(bot_id, ShopCosts.EGG, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_EGG,currUsefulNeighbor[1]], 3])
                                         
@@ -312,7 +314,8 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_EGG,currUsefulNeighbor[1]], 4])
 
-                                if (controller.can_buy(bot_id, ShopCosts.ONION)):
+                                if (controller.can_buy(bot_id, ShopCosts.ONION, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_ONION,currUsefulNeighbor[1]], 3])
                                         
@@ -326,7 +329,8 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_ONION,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.MEAT)):
+                                if (controller.can_buy(bot_id, ShopCosts.MEAT, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_MEAT,currUsefulNeighbor[1]], 3])
                                         
@@ -340,7 +344,8 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_MEAT,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.NOODLES)):
+                                if (controller.can_buy(bot_id, ShopCosts.NOODLES, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_NOODLES,currUsefulNeighbor[1]], 3])
                                         
@@ -354,7 +359,8 @@ class BotPlayer:
                                     else:
                                         legal_moves.append([nx, ny, [BotActions.BUY_NOODLES,currUsefulNeighbor[1]], 4])
                                 
-                                if (controller.can_buy(bot_id, ShopCosts.SAUCE)):
+                                if (controller.can_buy(bot_id, ShopCosts.SAUCE, currUsefulNeighbor[1][0], currUsefulNeighbor[1][1])):
+                                
                                     if dx == dy == 0:
                                         legal_moves.append([nx, ny, [BotActions.BUY_SAUCE,currUsefulNeighbor[1]], 3])
                                         
