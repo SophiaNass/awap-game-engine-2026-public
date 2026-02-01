@@ -582,7 +582,11 @@ class BotPlayer:
             
 
                         
-        #print(legal_moves)
+        print(legal_moves)
+
+        for i in range(len(legal_moves)-1, -1, -1):
+            if legal_moves[i][3] == 0 and legal_moves[i][2][0] != BotActions.NONE:
+                legal_moves.pop(i)
         return legal_moves
 
     def legal_moves(self, controller: RobotController):
